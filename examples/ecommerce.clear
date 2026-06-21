@@ -1,0 +1,214 @@
+product StoreBackend
+    name "E-Commerce Backend"
+    version "1.0"
+    description "Full e-commerce API with products, cart, orders, payments, and inventory"
+
+data Product
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field slug
+        type string
+        unique true
+    field description
+        type string
+    field price
+        type float
+        required true
+        min 0
+    field compare_at
+        type float
+        min 0
+    field images
+        type list of url
+    field category
+        type reference Category
+    field tags
+        type list of string
+    field in_stock
+        type boolean
+        default true
+    field stock_count
+        type integer
+        default 0
+    field created_at
+        type timestamp
+        default now
+
+data Variant
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field sku
+        type string
+        unique true
+    field price_modifier
+        type float
+        default 0
+    field available
+        type boolean
+        default true
+
+data Category
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field slug
+        type string
+        unique true
+    field parent
+        type reference Category
+
+data Cart
+    field id
+        type uuid
+        primary true
+    field items
+        type list of CartItem
+    field coupon_code
+        type string
+    field created_at
+        type timestamp
+        default now
+
+data CartItem
+    field id
+        type uuid
+        primary true
+    field product
+        type reference Product
+    field variant
+        type reference Variant
+    field quantity
+        type integer
+        min 1
+        max 99
+    field price
+        type float
+
+data Order
+    field id
+        type uuid
+        primary true
+    field items
+        type list of CartItem
+    field total
+        type float
+        required true
+    field status
+        type enum
+        options ["pending", "confirmed", "shipped", "delivered", "cancelled"]
+    field shipping_address
+        type string
+        required true
+    field payment_method
+        type string
+    field created_at
+        type timestamp
+        default now
+
+api REST /api/products
+    get /
+        return list of Product
+        paginate 20 per page
+        filter by category, in_stock
+        sort by created_at desc
+    get /:slug
+        return Product by slug
+        include category details
+        error 404 if not found
+    post /
+        accept name, price, description, category, images, tags, in_stock
+        return created Product
+        status 201
+    put /:id
+        accept name, price, description, in_stock, stock_count
+        return updated Product
+        error 404 if not found
+    delete /:id
+        status 204
+        error 404 if not found
+
+api REST /api/cart
+    get /:id
+        return Cart by id
+        error 404 if not found
+    post /
+        accept items
+        return created Cart
+        status 201
+    put /:id/items
+        accept items
+        return updated Cart
+        error 404 if not found
+
+api REST /api/orders
+    get /
+        return list of Order
+        paginate 20 per page
+        sort by created_at desc
+    get /:id
+        return Order by id
+        error 404 if not found
+    post /
+        accept items, total, shipping_address, payment_method
+        validate with rules
+        return created Order
+        status 201
+
+rule OrderValidation
+    apply to Order
+    require total > 0
+    require items is not empty
+
+screen Dashboard
+    title "Store Dashboard"
+    section kpis
+        show products as stat
+            label "Total Products"
+    section inventory
+        show products as table
+        sort by name
+    section categories
+        show categories as list
+
+screen ProductGrid
+    title "Products"
+    layout kanban
+    section grid
+        show products as list
+
+screen OrderManagement
+    title "Orders"
+    section list
+        show orders as table
+        sort by created_at desc
+    section search
+        search
+            placeholder "Search orders..."
+
+screen OrderTimeline
+    title "Order Timeline"
+    section flow
+        show orders as timeline
+            date created_at
+
+auth Default
+    accept email, password, name
+    session jwt
+        expire 7 days
+
+config production
+    port 8080
+
+deploy cloudflare-workers
+    routes /api/*

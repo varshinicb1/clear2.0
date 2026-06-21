@@ -167,8 +167,8 @@ async function cmdBuild(args: string[]) {
 
   if (targetFlag >= 0 && args[targetFlag + 1]) {
     const t = args[targetFlag + 1]
-    if (t === 'hono') options.target = 'hono'
-    else if (t === 'express') options.target = 'express'
+    const validTargets = ['hono', 'express', 'fastify', 'koa', 'openapi', 'postman', 'typescript']
+    if (validTargets.includes(t)) options.target = t as any
     else options.target = 'typescript'
   }
 

@@ -9,214 +9,230 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/varshinicb1/clear2.0">Website</a> ·
-  <a href="https://github.com/varshinicb1/clear2.0/tree/main/spec">Language Spec</a> ·
-  <a href="https://github.com/varshinicb1/clear2.0/tree/main/examples">Examples</a> ·
-  <a href="https://github.com/varshinicb1/clear2.0/tree/main/docs">Docs</a>
+  <a href="#-quickstart"><img src="https://img.shields.io/badge/Quickstart-30s-blue?style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/@varshinicb1/clear"><img src="https://img.shields.io/npm/v/@varshinicb1/clear?style=flat-square" /></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" /></a>
+  <a href="https://github.com/varshinicb1/clear2.0"><img src="https://img.shields.io/github/stars/varshinicb1/clear2.0?style=flat-square" /></a>
 </p>
 
 ---
 
-## Who Is Clear For?
+## 🚀 Quickstart
 
-Clear is for **backend developers** who want to go from idea to working API faster. If you know what data you're working with and what endpoints you need, you can write it in Clear and get a running server in seconds — no routing boilerplate, no ORM setup, no manual scaffolding.
+```bash
+# Install
+npm install -g @varshinicb1/clear
 
-It is also for **anyone who can describe an API in structured English** — a product manager sketching endpoints, a frontend developer who needs a quick backend, a designer who wants to validate an API contract. The interpreter lets you run `.clear` files directly without installing a framework or writing a line of TypeScript.
+# Create your first API
+mkdir my-api && cd my-api
 
-> This is v0.4. Clear is in active development. The vision goes far beyond REST APIs — see [The Vision](#the-vision) below — but today it excels at one thing: **turning a data model + route description into a working HTTP server.**
-
----
-
-## The Vision
-
-Traditional software development has too many layers between what you want and what runs:
-
-```
-Traditional:    Idea → PRD → Design → Spec → Code (Language) → Build → Deploy
-Clear (today):  Idea → Clear → Server
-Clear (future): Idea → Clear → Machine Code
-```
-
-Clear's north star is eliminating everything between human intent and machine execution. Today it eliminates the **code** step for REST APIs. Tomorrow it will eliminate the **compile and build** steps too.
-
-**The spec is the code** — a `clear` file is both documentation and implementation. No drift between what was planned and what runs.
-
----
-
-Forked from [Sahin](https://github.com/sahin/clear) — originally created at [Lovie](https://lovie.com). Maintained at [varshinicb1/clear2.0](https://github.com/varshinicb1/clear2.0).
-
-## Status
-
-Clear is in **v0.4** — parser, validator, CLI, interpreter, and 5 code generators are working. The language spec is being refined through real examples.
-
-| Artifact | Status |
-|----------|--------|
-| Language spec | Draft (see `spec/`) |
-| Examples | 6 real-world use cases (see `examples/`) |
-| Parser | ✅ Parses all 12 block types with error recovery |
-| Validator | ✅ Semantic validation with reference resolution |
-| Code Generator | ✅ **TypeScript**, **Express**, **Hono**, **Fastify**, **Koa** |
-| Interpreter | ✅ **Direct execution** — `clear run rest-api.clear` starts a live HTTP server |
-| Tests | **597 tests** — parser + validator + codegen snapshot tests |
-| CLI | ✅ `clear check`, `clear build`, `clear run`, `clear init` |
-| CI | ✅ Build + test + snapshot verification on Node 18/20/22 + nightly |
-| Snapshot Check | [![Snapshot Check](https://github.com/varshinicb1/clear2.0/actions/workflows/snapshot-check.yml/badge.svg)](https://github.com/varshinicb1/clear2.0/actions/workflows/snapshot-check.yml) |
-| Coverage | [![Codecov](https://codecov.io/gh/varshinicb1/clear2.0/branch/main/graph/badge.svg)](https://codecov.io/gh/varshinicb1/clear2.0) |
-| Website | [github.com/varshinicb1/clear2.0](https://github.com/varshinicb1/clear2.0) |
-| VS Code extension | Planned |
-| Agent runtime | Planned |
-
-## Quick Start
-
-Write your API in a `.clear` file, run it, and get a working HTTP server. No `npm install`, no framework config, no TypeScript.
-
-```clear
-product TaskAPI
-    name "Task Management API"
+# Write your spec
+echo 'product MyAPI
+    name "My First API"
 
 data Task
-    field id
-        type uuid
-        primary true
-    field title
-        type string
-        required true
-    field status
-        type enum
-        options ["todo", "in_progress", "done"]
-        default "todo"
-    field created_at
-        type timestamp
-        default now
+    field id       type uuid      primary true
+    field title    type string    required true
+    field status   type enum      options ["todo", "done"]   default "todo"
 
 api REST /tasks
-    get /
-        return list of Task
-        paginate 20 per page
-    post /
-        accept title
-        set created_at to now
-        status 201
-    delete /:id
-        status 204
+    get /       return list of Task
+    post /      accept title     return created Task    status 201' > app.clear
+
+# Run it — instant server with REST API + Web UI
+clear run app.clear
+# → http://localhost:8080/api/tasks   (REST API)
+# → http://localhost:8080/s/dashboard  (Web UI)
 ```
 
-```sh
-$ clear run examples/rest-api.clear
-# → 🚀  http://localhost:8080
+## ✨ Features
+
+| Feature | What you write | What you get |
+|---------|---------------|--------------|
+| **Data Models** | `data Task` + fields + types | Type-safe schemas, auto-generated IDs |
+| **REST APIs** | `api REST /tasks` + routes | Full CRUD with filtering, sorting, pagination |
+| **Web UI** | `screen Dashboard` + components | Live HTML pages — tables, kanban, charts, forms |
+| **Auth** | `auth Default` + login/signup | Token-based sessions, protected routes & screens |
+| **Charts** | `show X as bar / line / pie` | SVG charts — zero dependencies |
+| **Kanban** | `show tasks as kanban` | Drag-ready kanban board |
+| **Calendar** | `show tasks as calendar` | Month calendar with events |
+| **Timeline** | `show X as timeline` | Vertical timeline / Gantt |
+| **Data Grid** | `show X as datagrid` | Editable inline table |
+| **Validation** | `rule TaskValidation` | Runtime validation on create/update |
+| **Persistence** | Auto-enabled | Data saves to `.clear-data/`, survives restarts |
+| **Export** | `--target express / openapi / postman` | Production code, OpenAPI spec, Postman collections |
+
+## 📋 Example: Task Manager (140 lines)
+
+```clear
+product TaskManager
+    name "Full-Stack Task Manager"
+    version "1.0"
+
+data User
+    field id       type uuid      primary true
+    field name     type string    required true
+    field email    type email     required true   unique true
+
+data Task
+    field id       type uuid      primary true
+    field title    type string    required true
+    field status   type enum      options ["backlog", "todo", "in_progress", "review", "done"]
+    field priority type enum      options ["low", "medium", "high", "urgent"]
+    field assignee type reference User
+
+api REST /api/tasks
+    get /            return list of Task     paginate 50 per page
+                     filter by status, priority    sort by created_at desc
+    get /:id         return Task by id       include assignee details    error 404 if not found
+    post /           accept title, priority, assignee   return created Task   status 201
+    put /:id         accept title, status, priority     return updated Task   error 404 if not found
+    delete /:id      status 204              error 404 if not found
+
+screen Dashboard
+    title "Dashboard"
+    section stats    show tasks as stat      label "Total Tasks"
+    section overview show tasks as table     sort by created_at desc
+
+screen KanbanBoard
+    title "Kanban"
+    section board    show tasks as kanban
+
+screen Analytics
+    section charts   show tasks as bar       label title     value priority
+    section pie      show tasks as pie       label title     value priority
+
+auth Default
+    accept email, password, name
+    session jwt      expire 7 days
+
+config development
+    port 8080
+
+deploy cloudflare-workers
+    routes /api/*
+    routes /s/*
+
+# Run it:
+clear run task-manager.clear
+# → Web UI at http://localhost:3000
+# → API at http://localhost:3000/api/tasks
+# → Login at http://localhost:3000/s/login
 ```
 
-```sh
-$ curl http://localhost:8080/tasks
-# → {"data":[],"total":0,"page":1,"limit":20,"totalPages":1}
-```
+## 🏢 Sector Examples
 
-The `.clear` file is the spec **and** the implementation. Change the file, restart — no compilation, no intermediate code.
-
-## Generate Production-Ready Code
-
-When you're ready to deploy, Clear generates real framework code that you can customize, test, and deploy:
-
-Clear can generate a fully working Express.js, Hono, Fastify, or Koa API server from a `.clear` file — complete with CRUD routes, filtering, sorting, pagination, validation, and auto-generated field defaults.
+Clear works for every industry. Run any of these:
 
 ```bash
-# Generate an Express server from the REST API example
-clear build examples/rest-api.clear --target express --out server.ts
+# 🛒 E-Commerce — products, cart, orders, inventory
+clear run examples/ecommerce.clear
 
-# Install dependencies
-npm install express cors uuid
+# 💬 Chat App — rooms, messages, users, status
+clear run examples/chat-app.clear
 
-# Run it
-npx tsx server.ts
-# → Server running on port 8080
+# 🏥 Healthcare — patients, appointments, records, prescriptions
+clear run examples/healthcare.clear
+
+# 💰 Fintech — accounts, transactions, invoices, payouts
+clear run examples/fintech.clear
+
+# ✅ Task Manager — tasks, kanban, users, projects
+clear run examples/task-manager.clear
 ```
 
-Or generate for Hono, Fastify, Koa, or TypeScript:
+## 🛠️ Commands
 
-### Other Targets
+| Command | Description |
+|---------|-------------|
+| `clear run app.clear` | Start a live server (REST API + Web UI) |
+| `clear check app.clear` | Parse + validate a .clear file |
+| `clear build app.clear --target express` | Generate Express.js server |
+| `clear build app.clear --target openapi` | Export OpenAPI 3.0 spec |
+| `clear build app.clear --target postman` | Export Postman collection |
+| `clear build app.clear --target hono` | Generate Hono server |
+| `clear build app.clear --target fastify` | Generate Fastify server |
+| `clear build app.clear --target koa` | Generate Koa server |
+| `clear init my-app` | Scaffold a new project |
 
-```bash
-# Generate a Hono server (runs on Node via @hono/node-server)
-clear build examples/rest-api.clear --target hono --out server.ts
-npm install hono @hono/node-server cors uuid
-npx tsx server.ts
+### Run Options
 
-# Generate a Fastify server (with @fastify/cors)
-clear build examples/rest-api.clear --target fastify --out server.ts
-npm install fastify @fastify/cors uuid
-npx tsx server.ts
+| Flag | Description |
+|------|-------------|
+| `--port 3000` | Port to run on (default: 8080) |
+| `--verbose` | Log all HTTP requests |
+| `--silent` | Suppress startup output |
+| `--watch` | Hot-reload on file changes |
+| `--resolve-depth 5` | Nested reference depth |
+| `--max-response-size 100000` | Response size limit |
 
-# Generate a Koa server (with @koa/router, @koa/cors, @koa/bodyparser)
-clear build examples/rest-api.clear --target koa --out server.ts
-npm install koa @koa/router @koa/cors @koa/bodyparser uuid
-npx tsx server.ts
+## 🎨 Screen Components
 
-# Generate TypeScript interfaces (default)
-clear build examples/rest-api.clear --target ts
+| Component | Clear Syntax | Description |
+|-----------|-------------|-------------|
+| Table | `show X as table` | Sortable data table with badges |
+| List / Card | `show X as list` | Card grid layout |
+| Kanban | `show X as kanban` | Columns grouped by status |
+| Bar Chart | `show X as bar` | SVG bar chart |
+| Line Chart | `show X as line` | SVG line chart |
+| Pie Chart | `show X as pie` | SVG pie chart |
+| Calendar | `show X as calendar` | Month view calendar |
+| Timeline | `show X as timeline` | Date-ordered timeline |
+| Data Grid | `show X as datagrid` | Editable inline table |
+| Stat Card | `show X as stat` | KPI / metric display |
+| Search | `search` | Auto-filter search bar |
+| Form | `field ...` | Auto-generated from model |
+| Button | `button "X"` | Styled action button |
+| Tabs | `tabs / tab "X"` | Tabbed containers |
+
+## 📖 Language Spec
+
+- **12 keywords**: `product`, `data`, `screen`, `flow`, `rule`, `example`, `agent`, `skill`, `api`, `event`, `config`, `deploy`, `auth`
+- **8 primitive types**: string, integer, float, boolean, timestamp, uuid, url, email
+- **4 compound types**: list, map, enum, reference
+- **Indentation-based**: 4-space hierarchy, no braces
+- **Full spec**: See [spec/](spec/) directory
+
+## 🔧 VS Code Extension
+
+Install the [Clear Language](vscode-extension/) extension for:
+- Syntax highlighting for `.clear` files
+- Code snippets (product, data, api, screen, auth, etc.)
+- Commands: Run, Validate, Build from the command palette
+
+## 📦 What's Built
+
+```
+clear-repo/
+  src/
+    index.ts            # CLI entry point
+    ast.ts              # AST type definitions
+    parser.ts           # Recursive descent parser
+    validator.ts        # Semantic validator
+    codegen/            # Code generators (TypeScript, Express, Hono, Fastify, Koa)
+      openapi.ts        # OpenAPI 3.0 export
+      postman.ts        # Postman collection export
+      react.ts          # React app generator
+    interpreter/
+      index.ts          # Interpreter orchestrator
+      server.ts         # HTTP server
+      store.ts          # In-memory data store
+      renderer.ts       # Screen renderer (14 components)
+      auth.ts           # Authentication system
+      persistence.ts    # File-based persistence
+      flow.ts           # Flow/ETL executor
+      renderer/
+        templates.ts    # Custom template engine
+  examples/             # 10+ working examples
+  spec/                 # Language specification
+  vscode-extension/     # VS Code extension
 ```
 
-## Why Clear Exists
+## 🤝 Contributing
 
-Clear is a bet that **the next wave of development tools will be spec-first, not code-first**. Instead of writing implementation details and hoping the docs match reality, you write the spec and the system generates or executes the rest.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-Today that means REST APIs. Tomorrow it means full-stack applications, data pipelines, AI agents — all expressed in the same structured English syntax. The interpreter is step one.
+## 📄 License
 
-For a deeper look at the philosophy, see [Design Decisions](docs/design-decisions.md).
-
-## Language Overview
-
-Clear uses **12 keywords** to describe systems. Of these, `data`, `api`, `product`, and `config` are the most mature today:
-
-| Keyword | Purpose | Status |
-|---------|---------|--------|
-| `product` | Top-level system definition | ✅ Mature |
-| `data` | Schema and data structures | ✅ Mature |
-| `api` | External interface definitions | ✅ REST APIs working |
-| `config` | Environment and settings | ✅ Working |
-| `rule` | Constraints and validations | ✅ Validation rules functional |
-| `flow` | Business logic and workflows | 🚧 Parsed, no interpreter yet |
-| `screen` | UI layout and components | 🚧 Parsed, no interpreter yet |
-| `example` | Test cases and documentation | 🚧 Parsed, no executor yet |
-| `event` | System triggers and signals | 🚧 Parsed, no runtime yet |
-| `deploy` | Infrastructure targets | 🚧 Parsed, no executor yet |
-| `agent` | Autonomous AI behavior | 🚧 Parsed, no runtime yet |
-| `skill` | Reusable capabilities | 🚧 Parsed, no runtime yet |
-
-## Examples
-
-See the [`examples/`](examples/) directory for use cases. Note that only the REST API example (`rest-api.clear`) can be executed with `clear run` today — the others parse and validate, but their runtimes are under development:
-
-| Example | Status |
-|---------|--------|
-| [REST API](examples/rest-api.clear) | ✅ Works with `clear run` and `clear build` |
-| [Customer Support Agent](examples/support-agent.clear) | 🚧 Parses, validates — agent runtime planned |
-| [MCP Server](examples/mcp-server.clear) | 🚧 Parses, validates — MCP runtime planned |
-| [E-commerce Product Page](examples/product-page.clear) | 🚧 Parses, validates — screen runtime planned |
-| [Data Pipeline](examples/data-pipeline.clear) | 🚧 Parses, validates — flow runtime planned |
-| [Lead Qualification Bot](examples/lead-qualification.clear) | 🚧 Parses, validates — agent runtime planned |
-
-## Documentation
-
-- [Language Specification](spec/README.md) — formal grammar and semantics
-- [Design Decisions](docs/design-decisions.md) — why Clear works this way
-- [Roadmap](docs/roadmap.md) — what's coming next
-
-## Contributing
-
-Clear is in early design. Contributions to the language spec, examples, and documentation are welcome.
-
-1. Fork this repository
-2. Create your branch (`git checkout -b my-proposal`)
-3. Commit your changes (`git commit -am 'Propose: new keyword for X'`)
-4. Push to the branch (`git push origin my-proposal`)
-5. Open a Pull Request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-## Community
-
-- [GitHub Issues](https://github.com/varshinicb1/clear2.0/issues) — bug reports and feature requests
-
-## License
-
-Clear is distributed under the [MIT License](LICENSE).
+MIT — see [LICENSE](LICENSE).

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clear — Structured English for REST APIs</title>
+  <style>
+    :root {
+      --primary: #3b82f6; --primary-dark: #2563eb; --bg: #f8fafc;
+      --surface: #fff; --surface-2: #f1f5f9; --border: #e2e8f0;
+      --text: #1e293b; --text-muted: #64748b; --radius: 8px;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    .hero { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; padding: 80px 0 60px; text-align: center; }
+    .hero h1 { font-size: 48px; font-weight: 800; margin-bottom: 16px; letter-spacing: -1px; }
+    .hero h1 span { color: var(--primary); }
+    .hero p { font-size: 20px; color: #94a3b8; max-width: 600px; margin: 0 auto 32px; }
+    .hero-code { background: #1e293b; border: 1px solid #475569; border-radius: var(--radius); padding: 20px; text-align: left; max-width: 500px; margin: 0 auto 32px; font-family: var(--font-mono); font-size: 14px; line-height: 1.8; color: #e2e8f0; }
+    .hero-code .keyword { color: #93c5fd; }
+    .hero-code .string { color: #86efac; }
+    .hero-code .comment { color: #64748b; }
+    .btn { display: inline-block; padding: 12px 32px; border-radius: var(--radius); font-size: 16px; font-weight: 600; text-decoration: none; transition: all .15s; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-outline { border: 2px solid var(--primary); color: var(--primary); }
+    .btn-outline:hover { background: var(--primary); color: #fff; }
+    .hero-btns { display: flex; gap: 12px; justify-content: center; }
+
+    /* Features */
+    .features { padding: 80px 0; }
+    .features h2 { text-align: center; font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .features .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 48px; font-size: 18px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: box-shadow .15s; }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+    .card-icon { font-size: 28px; margin-bottom: 12px; }
+    .card h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .card p { font-size: 14px; color: var(--text-muted); }
+
+    /* Example */
+    .example { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; margin: 40px 0; }
+    .example h3 { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+    .example pre { background: #1e293b; border-radius: var(--radius); padding: 20px; overflow-x: auto; font-family: var(--font-mono); font-size: 13px; line-height: 1.7; color: #e2e8f0; }
+
+    /* Footer */
+    .footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 14px; }
+    .footer a { color: var(--primary); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 32px; }
+      .hero p { font-size: 16px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="container">
+      <h1>Write <span>Clear</span>. Run the API.</h1>
+      <p>Structured English for REST APIs. Define data, endpoints, screens, and rules in one file — then run it immediately or generate production code.</p>
+      <div class="hero-code">
+        <span class="keyword">data</span> Task<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">field</span> title &nbsp;&nbsp;<span class="keyword">type</span> string &nbsp;&nbsp;<span class="keyword">required true</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">field</span> status &nbsp;<span class="keyword">type</span> enum &nbsp;&nbsp;<span class="keyword">options</span> <span class="string">["todo", "done"]</span><br>
+        <br>
+        <span class="keyword">api</span> REST /tasks<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">get</span> / &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> list of Task<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">post</span> / &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">accept</span> title &nbsp;&nbsp;<span class="keyword">return</span> created Task <span class="keyword">status</span> 201
+      </div>
+      <div class="hero-btns">
+        <a href="#install" class="btn btn-primary">Get Started →</a>
+        <a href="https://github.com/varshinicb1/clear2.0" class="btn btn-outline">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <h2>Why Clear?</h2>
+      <p class="subtitle">One language. Zero boilerplate. Instant API.</p>
+      <div class="grid">
+        <div class="card"><div class="card-icon">📝</div><h3>Spec-First</h3><p>Write your API in plain English. No frameworks, no config, no boilerplate. The spec <em>is</em> the code.</p></div>
+        <div class="card"><div class="card-icon">⚡</div><h3>Instant Server</h3><p><code>clear run app.clear</code> starts a live REST API + web UI. Zero setup. Zero dependencies at runtime.</p></div>
+        <div class="card"><div class="card-icon">🚀</div><h3>Production Ready</h3><p><code>clear build --target express</code> generates production code for Express, Hono, Fastify, or Koa.</p></div>
+        <div class="card"><div class="card-icon">🎨</div><h3>Built-in UI</h3><p>Define screens with <code>show tasks as table</code> or <code>show tasks as kanban</code> — get live HTML pages.</p></div>
+        <div class="card"><div class="card-icon">🔐</div><h3>Auth Built-in</h3><p><code>auth email-password</code> adds signup, login, and session management. Protected routes and screens.</p></div>
+        <div class="card"><div class="card-icon">📊</div><h3>Charts & More</h3><p>SVG bar, line, and pie charts. Calendars, timelines, stat cards, data grids — all zero dependencies.</p></div>
+        <div class="card"><div class="card-icon">📦</div><h3>Export Anywhere</h3><p>Export to OpenAPI 3.0, Postman collections, or React apps. Integrate with any stack.</p></div>
+        <div class="card"><div class="card-icon">💾</div><h3>Auto-Persist</h3><p>Data saves to disk automatically. Restart your server — data survives. No database required to start.</p></div>
+        <div class="card"><div class="card-icon">🔌</div><h3>Every Sector</h3><p>E-commerce, healthcare, fintech, chat, project management — Clear works for any API use case.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container" id="install">
+    <div class="example">
+      <h3>🚀 Quickstart (30 seconds)</h3>
+      <pre># Install
+npm install -g @varshinicb1/clear
+
+# Create your first API
+mkdir my-api && cd my-api
+echo 'product MyAPI
+    name "My First API"
+
+data Task
+    field id       type uuid      primary true
+    field title    type string    required true
+    field status   type enum      options ["todo", "done"]
+        default "todo"
+
+api REST /tasks
+    get /       return list of Task
+    post /      accept title     return created Task    status 201' > app.clear
+
+# Run it
+clear run app.clear
+# → http://localhost:8080/tasks (REST API)
+# → http://localhost:8080/s/dashboard (Web UI)</pre>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="example">
+      <h3>📋 Full Task Manager — 140 lines</h3>
+      <pre>product TaskManager
+    name "Full-Stack Task Manager"
+
+data User
+    field id     type uuid    primary true
+    field name   type string  required true
+    field email  type email   required true    unique true
+
+data Task
+    field id       type uuid    primary true
+    field title    type string  required true
+    field status   type enum    options ["backlog", "todo", "in_progress", "review", "done"]
+    field priority type enum    options ["low", "medium", "high", "urgent"]
+    field assignee type reference User
+
+api REST /api/tasks
+    get /        return list of Task    filter by status, priority
+    post /       accept title, priority, assignee    return created Task    status 201
+
+screen Dashboard
+    section stats    show tasks as stat   label "Total Tasks"
+    section overview show tasks as table
+
+screen KanbanBoard
+    section board    show tasks as kanban
+
+auth Default
+    accept email, password, name
+    session jwt   expire 7 days
+
+clear run task-manager.clear
+# → REST API at /api/tasks
+# → Kanban board at /s/kanban-board
+# → Login at /s/login</pre>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="example">
+      <h3>📦 8 Built-in Sectors — One Language</h3>
+      <pre>clear run examples/ecommerce.clear    # 🛒 Products, cart, orders, inventory
+clear run examples/chat-app.clear      # 💬 Rooms, messages, users, status
+clear run examples/healthcare.clear    # 🏥 Patients, appointments, records, prescriptions
+clear run examples/fintech.clear       # 💰 Accounts, transactions, invoices, payouts
+clear run examples/task-manager.clear  # ✅ Tasks, kanban, users, projects
+
+clear build app.clear --target express   # → Full Express.js server
+clear build app.clear --target openapi   # → OpenAPI 3.0 spec
+clear build app.clear --target postman   # → Postman collection</pre>
+    </div>
+  </section>
+
+  <section class="container" style="text-align:center;padding:60px 0">
+    <h2 style="font-size:28px;font-weight:700;margin-bottom:12px">Ready to build something?</h2>
+    <p style="color:var(--text-muted);margin-bottom:24px;font-size:18px">Install Clear and write your first API in 30 seconds.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="https://github.com/varshinicb1/clear2.0" class="btn btn-primary">⭐ Star on GitHub</a>
+      <a href="https://github.com/varshinicb1/clear2.0/issues" class="btn btn-outline">Report Issue</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Clear — MIT License. Built by <a href="https://github.com/varshinicb1">varshinicb1</a>.</p>
+    </div>
+  </footer>
+</body>
+</html>

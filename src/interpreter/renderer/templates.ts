@@ -52,7 +52,7 @@ export function createTemplateEngine(projectDir: string): TemplateEngine {
           const items = data?.[listName]
           if (!Array.isArray(items)) return ''
           return items.map((item: any, idx: number) => {
-            return template.replace(/\{\{this\.(\w+)\}\}/g, (__, key: string) => String(item[key] ?? ''))
+            return template.replace(/\{\{this\.(\w+)\}\}/g, (_match: string, key: string) => String(item[key] ?? ''))
               .replace(/\{\{index\}\}/g, String(idx))
           }).join('')
         })

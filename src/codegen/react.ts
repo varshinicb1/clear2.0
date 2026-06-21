@@ -1,14 +1,19 @@
 // React component generator for Clear
 // Generates functional React components with TypeScript from ScreenBlock AST
 
-import { ClearFile, ScreenBlock, ScreenSection, Property, DataBlock, FieldDef } from '../ast.js'
+import { ClearFile, ScreenBlock, ScreenSection, Property, DataBlock, FieldDef, Value } from '../ast.js'
+
+function getStringValue(prop: Property | undefined): string | undefined {
+  if (!prop) return undefined
+  return prop.value?.type === 'string' ? prop.value.value : undefined
+}
 
 export function generateReactApp(ast: ClearFile): Record<string, string> {
   const files: Record<string, string> = {}
 
   // package.json
   files['package.json'] = JSON.stringify({
-    name: (ast.product.properties.find(p => p.key === 'name')?.value?.value || ast.product.name).toLowerCase().replace(/\s+/g, '-'),
+    name: (getStringValue(ast.product.properties.find(p => p.key === 'name')) || ast.product.name).toLowerCase().replace(/\s+/g, '-'),
     private: true,
     type: 'module',
     scripts: { dev: 'vite', build: 'tsc && vite build', preview: 'vite preview' },
@@ -30,7 +35,7 @@ export default defineConfig({ plugins: [react()] })`
   // index.html
   files['index.html'] = `<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${ast.product.properties.find(p => p.key === 'name')?.value?.value || ast.product.name}</title></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${getStringValue(ast.product.properties.find(p => p.key === 'name')) || ast.product.name}</title></head>
 <body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body>
 </html>`
 
@@ -66,7 +71,7 @@ export default function App() {
     <BrowserRouter>
       <div className="app">
         <nav className="nav">
-          <span className="nav-brand">${ast.product.properties.find(p => p.key === 'name')?.value?.value || ast.product.name}</span>
+          <span className="nav-brand">${getStringValue(ast.product.properties.find(p => p.key === 'name')) || ast.product.name}</span>
           <div className="nav-links">
 ${screenBlocks.map(s => {
   const name = s.name.replace(/[^a-zA-Z0-9]/g, '')

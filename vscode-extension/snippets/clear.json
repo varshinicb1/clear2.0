@@ -1,0 +1,135 @@
+{
+  "Product Block": {
+    "prefix": "product",
+    "body": [
+      "product ${1:MyApp}",
+      "    name \"${2:My App}\"",
+      "    version \"${3:0.1}\"",
+      "    description \"${4:A Clear project}\"",
+      ""
+    ],
+    "description": "Create a product block"
+  },
+  "Data Block": {
+    "prefix": "data",
+    "body": [
+      "data ${1:ModelName}",
+      "    field id",
+      "        type uuid",
+      "        primary true",
+      "    field ${2:name}",
+      "        type ${3:string}",
+      "        required true",
+      ""
+    ],
+    "description": "Create a data model block"
+  },
+  "API REST Block": {
+    "prefix": "api",
+    "body": [
+      "api REST ${1:/path}",
+      "    get /",
+      "        return list of ${2:Model}",
+      "    get /:id",
+      "        return ${2:Model} by id",
+      "        error 404 if not found",
+      "    post /",
+      "        accept ${3:fields}",
+      "        return created ${2:Model}",
+      "        status 201",
+      ""
+    ],
+    "description": "Create a REST API block"
+  },
+  "Screen Block": {
+    "prefix": "screen",
+    "body": [
+      "screen ${1:ScreenName}",
+      "    title \"${2:Title}\"",
+      "",
+      "    section ${3:name}",
+      "        show ${4:data} as ${5:table}",
+      ""
+    ],
+    "description": "Create a screen/UI block"
+  },
+  "Field with Enum": {
+    "prefix": "enum",
+    "body": [
+      "field ${1:status}",
+      "    type enum",
+      "    options [${2:\"a\", \"b\", \"c\"}]",
+      "    default \"${3:a}\"",
+      ""
+    ],
+    "description": "Create an enum field"
+  },
+  "Flow Block": {
+    "prefix": "flow",
+    "body": [
+      "flow ${1:FlowName}",
+      "    trigger schedule every ${2:1} ${3:minute}",
+      "    step ${4:extract}",
+      "        fetch ${5:data} from ${6:API}",
+      "    step ${7:load}",
+      "        upsert into ${8:Model}",
+      ""
+    ],
+    "description": "Create a flow/ETL block"
+  },
+  "Rule Block": {
+    "prefix": "rule",
+    "body": [
+      "rule ${1:RuleName}",
+      "    apply to ${2:Model}",
+      "    require ${3:field} is not empty",
+      ""
+    ],
+    "description": "Create a validation rule"
+  },
+  "Auth Block": {
+    "prefix": "auth",
+    "body": [
+      "auth ${1:Default}",
+      "    accept email, password, name",
+      "    session jwt",
+      "        expire ${2:7} days",
+      ""
+    ],
+    "description": "Create an auth configuration"
+  },
+  "Deploy Block": {
+    "prefix": "deploy",
+    "body": [
+      "deploy ${1:cloudflare-workers}",
+      "    routes ${2:/*}",
+      ""
+    ],
+    "description": "Create a deploy configuration"
+  },
+  "Kanban Screen": {
+    "prefix": "kanban",
+    "body": [
+      "screen ${1:KanbanBoard}",
+      "    title \"${2:Kanban Board}\"",
+      "    layout kanban",
+      "",
+      "    section board",
+      "        show ${3:tasks} as kanban",
+      ""
+    ],
+    "description": "Create a kanban board screen"
+  },
+  "Chart Screen": {
+    "prefix": "chart",
+    "body": [
+      "screen ${1:Analytics}",
+      "    title \"${2:Analytics}\"",
+      "",
+      "    section ${3:metrics}",
+      "        show ${4:data} as ${5|bar,line,pie|}",
+      ""
+    ],
+    "description": "Create a chart screen"
+  }
+}

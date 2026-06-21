@@ -1,0 +1,44 @@
+{
+  "name": "clear-language",
+  "displayName": "Clear Language",
+  "description": "Clear — Structured English for REST APIs. Write the spec, run the server.",
+  "version": "0.3.0",
+  "publisher": "varshinicb1",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/varshinicb1/clear2.0" },
+  "bugs": { "url": "https://github.com/varshinicb1/clear2.0/issues" },
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Programming Languages", "Snippets", "Linters"],
+  "keywords": ["clear", "api", "rest", "specification", "language", "low-code"],
+  "icon": "icon.png",
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [{
+      "id": "clear",
+      "aliases": ["Clear", "clear"],
+      "extensions": [".clear"],
+      "configuration": "./language-configuration.json",
+      "icon": { "light": "./icon-light.png", "dark": "./icon-dark.png" }
+    }],
+    "grammars": [{
+      "language": "clear",
+      "scopeName": "source.clear",
+      "path": "./syntaxes/clear.tmLanguage.json"
+    }],
+    "snippets": [{
+      "language": "clear",
+      "path": "./snippets/clear.json"
+    }],
+    "commands": [{
+      "command": "clear.run",
+      "title": "Clear: Run this file"
+    }, {
+      "command": "clear.check",
+      "title": "Clear: Validate this file"
+    }, {
+      "command": "clear.build",
+      "title": "Clear: Build from this file"
+    }]
+  }
+}

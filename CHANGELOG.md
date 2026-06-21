@@ -4,6 +4,32 @@ All notable changes to the Clear language specification will be documented in th
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.0] — 2026-06-22
+
+### Added
+
+- Screen renderer — server-side HTML rendering from `screen` blocks
+- 14 built-in UI components: table, card, kanban, charts (bar/line/pie/SVG), calendar, timeline, data grid, stat card, search, forms, tabs, carousel, selector, buttons
+- Authentication system — `auth` keyword block, signup/login/logout/me endpoints, token-based sessions
+- File-based persistence — data auto-saves to `.clear-data/` and survives restarts
+- Custom template engine — `template "path"` property on sections with `{{variable}}` syntax
+- OpenAPI 3.0 export — `clear build --target openapi`
+- Postman Collection v2.1 export — `clear build --target postman`
+- React app generator — `generateReact()` produces full Vite + React + TypeScript app
+- `auth` keyword added to parser, AST, and validator (13th keyword)
+- VS Code extension — syntax highlighting, 12 code snippets, Run/Check/Build commands
+- Marketing website at `docs/index.html` with quickstart, features, and sector showcase
+- 4 new sector examples: e-commerce, chat app, healthcare, fintech
+- 12 total validated examples
+
+### Changed
+
+- Bumped to v0.4.0
+- `HttpServer` now supports HTML responses and redirects via `responseType`
+- `RequestContext` now includes `headers` map
+- `Store` supports auto-persistence with `setPersistence()`
+- Codegen targets include `openapi` and `postman`
+
 ## [0.3.0] — 2026-06-21
 
 ### Added

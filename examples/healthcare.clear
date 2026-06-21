@@ -1,0 +1,217 @@
+product HealthPlatform
+    name "Healthcare API"
+    version "1.0"
+    description "HIPAA-compliant healthcare platform with patients, appointments, records, and prescriptions"
+
+data Patient
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field email
+        type email
+        unique true
+        required true
+    field phone
+        type string
+    field date_of_birth
+        type timestamp
+    field blood_type
+        type enum
+        options ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
+    field allergies
+        type list of string
+    field created_at
+        type timestamp
+        default now
+
+data Doctor
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field email
+        type email
+        unique true
+        required true
+    field specialty
+        type string
+        required true
+    field license_num
+        type string
+        unique true
+
+data Appointment
+    field id
+        type uuid
+        primary true
+    field patient
+        type reference Patient
+        required true
+    field doctor
+        type reference Doctor
+        required true
+    field date_time
+        type timestamp
+        required true
+    field duration_min
+        type integer
+        default 30
+    field status
+        type enum
+        options ["scheduled", "confirmed", "in_progress", "completed", "cancelled", "no_show"]
+    field reason
+        type string
+    field notes
+        type string
+    field created_at
+        type timestamp
+        default now
+
+data MedicalRecord
+    field id
+        type uuid
+        primary true
+    field patient
+        type reference Patient
+        required true
+    field doctor
+        type reference Doctor
+        required true
+    field diagnosis
+        type string
+        required true
+    field prescriptions
+        type list of Prescription
+    field notes
+        type string
+    field attachments
+        type list of url
+    field created_at
+        type timestamp
+        default now
+
+data Prescription
+    field id
+        type uuid
+        primary true
+    field medication
+        type string
+        required true
+    field dosage
+        type string
+        required true
+    field frequency
+        type string
+        required true
+    field duration_days
+        type integer
+    field refills
+        type integer
+        default 0
+    field notes
+        type string
+
+api REST /api/patients
+    get /
+        return list of Patient
+        paginate 20 per page
+        sort by name
+    get /:id
+        return Patient by id
+        error 404 if not found
+    post /
+        accept name, email, phone, date_of_birth, blood_type, allergies
+        return created Patient
+        status 201
+    put /:id
+        accept name, phone, allergies, blood_type
+        return updated Patient
+        error 404 if not found
+
+api REST /api/appointments
+    get /
+        return list of Appointment
+        paginate 30 per page
+        filter by status, patient, doctor
+        sort by date_time asc
+    get /:id
+        return Appointment by id
+        include patient details, doctor details
+        error 404 if not found
+    post /
+        accept patient, doctor, date_time, duration_min, reason
+        validate with rules
+        return created Appointment
+        status 201
+    put /:id/status
+        accept status
+        return updated Appointment
+        error 404 if not found
+
+api REST /api/records
+    get /
+        return list of MedicalRecord
+        paginate 20 per page
+        sort by created_at desc
+    get /:id
+        return MedicalRecord by id
+        include patient details
+        error 404 if not found
+    post /
+        accept patient, doctor, diagnosis, prescriptions, notes
+        return created MedicalRecord
+        status 201
+
+rule AppointmentValidation
+    apply to Appointment
+    require date_time is in the future when creating
+    require patient exists in Patient
+    require doctor exists in Doctor
+
+screen Dashboard
+    title "Health Dashboard"
+    section stats
+        show patients as stat
+            label "Total Patients"
+    section today
+        show appointments as table
+        sort by date_time asc
+
+screen Schedule
+    title "Appointments"
+    section calendar
+        show appointments as calendar
+            date date_time
+    section list
+        show appointments as table
+        sort by date_time asc
+
+screen PatientRecords
+    title "Patient Records"
+    section search
+        search
+            placeholder "Search patients..."
+    section grid
+        show patients as datagrid
+
+screen VisitHistory
+    title "Visit History"
+    section records
+        show records as timeline
+            date created_at
+
+auth Default
+    accept email, password, name
+    session jwt
+        expire 8 hours
+
+config production
+    port 8080
+
+deploy cloudflare-workers
+    routes /api/*

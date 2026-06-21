@@ -1,8 +1,13 @@
 // Postman Collection v2.1 generator for Clear
-import { ClearFile, ApiBlock, ApiRoute } from '../ast.js'
+import { ClearFile, ApiBlock, ApiRoute, Property, Value } from '../ast.js'
+
+function getStringValue(prop: Property | undefined): string | undefined {
+  if (!prop) return undefined
+  return prop.value?.type === 'string' ? prop.value.value : undefined
+}
 
 export function generatePostmanCollection(ast: ClearFile): string {
-  const infoName = ast.product.properties.find(p => p.key === 'name')?.value?.value || ast.product.name
+  const infoName = getStringValue(ast.product.properties.find(p => p.key === 'name')) || ast.product.name
   const items: any[] = []
   let baseUrl = 'http://localhost:8080'
 

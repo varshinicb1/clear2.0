@@ -1,0 +1,150 @@
+product ChatApp
+    name "Real-time Chat API"
+    version "1.0"
+    description "Messaging platform with rooms, direct messages, and message history"
+
+data User
+    field id
+        type uuid
+        primary true
+    field username
+        type string
+        required true
+        unique true
+    field display_name
+        type string
+        required true
+    field avatar_url
+        type url
+    field status
+        type enum
+        options ["online", "away", "busy", "offline"]
+    field last_seen
+        type timestamp
+        default now
+
+data Room
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field description
+        type string
+    field is_private
+        type boolean
+        default false
+    field members
+        type list of reference User
+    field created_at
+        type timestamp
+        default now
+
+data Message
+    field id
+        type uuid
+        primary true
+    field room
+        type reference Room
+        required true
+    field sender
+        type reference User
+        required true
+    field content
+        type string
+        required true
+    field attachments
+        type list of url
+    field reply_to
+        type reference Message
+    field edited_at
+        type timestamp
+    field created_at
+        type timestamp
+        default now
+
+api REST /api/rooms
+    get /
+        return list of Room
+        sort by created_at desc
+    get /:id
+        return Room by id
+        include members details
+        error 404 if not found
+    post /
+        accept name, description, is_private
+        return created Room
+        status 201
+
+api REST /api/rooms/:roomId/messages
+    get /
+        return list of Message
+        paginate 50 per page
+        sort by created_at desc
+        include sender details
+    post /
+        accept content, attachments, reply_to
+        validate with rules
+        set created_at to now
+        return created Message
+        status 201
+    delete /:id
+        remove Message by id
+        status 204
+        error 404 if not found
+
+api REST /api/users
+    get /
+        return list of User
+    get /:id
+        return User by id
+        error 404 if not found
+    put /:id/status
+        accept status
+        return updated User
+
+rule MessageValidation
+    apply to Message
+    require content is not empty
+    require content length <= 4000
+
+screen ChatDashboard
+    title "Chat"
+    section rooms
+        show rooms as list
+    section online
+        show users as list
+
+screen RoomView
+    title "Room"
+    section messages
+        show messages as table
+        sort by created_at desc
+    section reply
+        field content
+            type string
+            required true
+        button "Send"
+            action send_message
+            style primary
+
+screen UserDirectory
+    title "Directory"
+    section search
+        search
+            placeholder "Find users..."
+    section users
+        show users as list
+
+auth Default
+    accept email, password, username, display_name
+    session jwt
+        expire 30 days
+
+config production
+    port 8080
+    rate_limit 100 per minute per ip
+
+deploy cloudflare-workers
+    routes /api/*

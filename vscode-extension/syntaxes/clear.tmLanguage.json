@@ -1,0 +1,89 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Clear",
+  "scopeName": "source.clear",
+  "fileTypes": ["clear"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#keywords" },
+    { "include": "#strings" },
+    { "include": "#values" },
+    { "include": "#properties" },
+    { "include": "#fields" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [{
+        "match": "\\/\\/.*$",
+        "name": "comment.line.double-slash.clear"
+      }]
+    },
+    "keywords": {
+      "patterns": [{
+        "match": "\\b(product|data|screen|flow|rule|example|agent|skill|api|event|config|deploy|auth)\\b",
+        "name": "keyword.control.clear"
+      }, {
+        "match": "\\b(import|include|template)\\b",
+        "name": "keyword.other.clear"
+      }, {
+        "match": "\\b(get|post|put|delete|patch)\\b",
+        "name": "keyword.other.clear"
+      }, {
+        "match": "\\b(field|step|section|on|tab|route|trigger|handler)\\b",
+        "name": "keyword.other.clear"
+      }]
+    },
+    "strings": {
+      "patterns": [{
+        "begin": "\"",
+        "end": "\"",
+        "name": "string.quoted.double.clear",
+        "patterns": [{
+          "match": "\\\\.",
+          "name": "constant.character.escape.clear"
+        }]
+      }]
+    },
+    "values": {
+      "patterns": [
+        { "match": "\\b(true|false)\\b", "name": "constant.language.boolean.clear" },
+        { "match": "\\b(now|null|auto)\\b", "name": "constant.language.clear" },
+        { "match": "\\b\\d+(\\.\\d+)?\\b", "name": "constant.numeric.clear" },
+        { "match": "\\b(from env\\s+\\w+)\\b", "name": "variable.other.clear" }
+      ]
+    },
+    "properties": {
+      "patterns": [{
+        "match": "\\b(type|name|version|description)\\b",
+        "name": "support.type.property-name.clear"
+      }, {
+        "match": "\\b(required|unique|primary|default|min_length|max_length|min|max|format)\\b",
+        "name": "storage.modifier.clear"
+      }, {
+        "match": "\\b(string|integer|float|boolean|timestamp|uuid|url|email|enum|reference|list of|map)\\b",
+        "name": "support.type.clear"
+      }, {
+        "match": "\\b(REST|MCP|GraphQL)\\b",
+        "name": "support.constant.clear"
+      }, {
+        "match": "\\b(return|accept|error|status|paginate|filter|sort|set|validate|include)\\b",
+        "name": "keyword.operator.clear"
+      }, {
+        "match": "\\b(cloudflare-workers|docker|production|development|staging)\\b",
+        "name": "support.class.clear"
+      }]
+    },
+    "fields": {
+      "patterns": [{
+        "match": "^\\s+field\\s+(\\w+)",
+        "captures": { "1": { "name": "variable.other.clear" } }
+      }, {
+        "match": "^\\s+(show|button|search|tabs)\\b",
+        "name": "keyword.control.clear"
+      }, {
+        "match": "\\b(as|by|to|from|in|on|with|if|then|when|given)\\b",
+        "name": "keyword.operator.clear"
+      }]
+    }
+  }
+}

@@ -1,15 +1,20 @@
 // OpenAPI 3.0 spec generator for Clear
 // Builds a complete OpenAPI spec from the AST
 
-import { ClearFile, ApiBlock, ApiRoute, Property, DataBlock, FieldDef } from '../ast.js'
+import { ClearFile, ApiBlock, ApiRoute, Property, DataBlock, FieldDef, Value } from '../ast.js'
+
+function getStringValue(prop: Property | undefined): string | undefined {
+  if (!prop) return undefined
+  return prop.value?.type === 'string' ? prop.value.value : undefined
+}
 
 export function generateOpenApi(ast: ClearFile): string {
   const spec: any = {
     openapi: '3.0.3',
     info: {
-      title: ast.product.properties.find(p => p.key === 'name')?.value?.value || ast.product.name,
-      version: ast.product.properties.find(p => p.key === 'version')?.value?.value || '1.0.0',
-      description: ast.product.properties.find(p => p.key === 'description')?.value?.value || '',
+      title: getStringValue(ast.product.properties.find(p => p.key === 'name')) || ast.product.name,
+      version: getStringValue(ast.product.properties.find(p => p.key === 'version')) || '1.0.0',
+      description: getStringValue(ast.product.properties.find(p => p.key === 'description')) || '',
     },
     paths: {},
     components: {

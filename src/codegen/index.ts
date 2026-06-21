@@ -4,6 +4,8 @@ import { generateExpressCode } from './express.js'
 import { generateHonoCode } from './hono.js'
 import { generateFastifyCode } from './fastify.js'
 import { generateKoaCode } from './koa.js'
+import { generateOpenApi } from './openapi.js'
+import { generatePostmanCollection } from './postman.js'
 
 export type { CodegenOptions } from './typescript.js'
 
@@ -17,6 +19,10 @@ export function generateCode(ast: ClearFile, options: CodegenOptions = { target:
       return generateFastifyCode(ast)
     case 'koa':
       return generateKoaCode(ast)
+    case 'openapi':
+      return generateOpenApi(ast)
+    case 'postman':
+      return generatePostmanCollection(ast)
     default:
       return generateTsCode(ast, options)
   }

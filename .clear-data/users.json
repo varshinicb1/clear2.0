@@ -4,5 +4,17 @@
     "name": "Test User",
     "password": "hash_c8c29q",
     "id": "8b8bd03a-73f0-43e2-9164-7c06bba30acb"
+  },
+  {
+    "email": "final@test.com",
+    "name": "Final Test",
+    "password": "hash_nix5eo",
+    "id": "666f1c32-92ea-4571-b423-68001f5d827b"
+  },
+  {
+    "email": "e2e@test.com",
+    "name": "E2E Test",
+    "password": "hash_d3lcvz",
+    "id": "f90bc65d-132f-4974-99c0-0d2d3798e250"
   }
 ]
