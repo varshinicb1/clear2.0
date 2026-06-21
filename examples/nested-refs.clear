@@ -1,0 +1,111 @@
+product NestedRefs
+    name "Nested References Demo"
+    version "0.1"
+    description "Demonstrates 5-level nested reference resolution with --resolve-depth 5"
+
+data Company
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field domain
+        type string
+
+data Department
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field company
+        type reference Company
+
+data Team
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field department
+        type reference Department
+
+data Project
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field team
+        type reference Team
+
+data User
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field email
+        type string
+    field project
+        type reference Project
+
+api REST /companies
+    get /
+        return list of Company
+    get /:id
+        return Company by id
+        error 404 if not found
+    post /
+        accept name, domain
+        return created Company
+        status 201
+
+api REST /departments
+    get /
+        return list of Department
+    get /:id
+        return Department by id
+        error 404 if not found
+    post /
+        accept name, company
+        return created Department
+        status 201
+
+api REST /teams
+    get /
+        return list of Team
+    get /:id
+        return Team by id
+        error 404 if not found
+    post /
+        accept name, department
+        return created Team
+        status 201
+
+api REST /projects
+    get /
+        return list of Project
+    get /:id
+        return Project by id
+        error 404 if not found
+    post /
+        accept name, team
+        return created Project
+        status 201
+
+api REST /users
+    get /
+        return list of User
+    get /:id
+        return User by id
+        error 404 if not found
+    post /
+        accept name, email, project
+        return created User
+        status 201

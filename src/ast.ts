@@ -152,6 +152,13 @@ export interface DeployBlock {
   span: Span
 }
 
+export interface AuthBlock {
+  type: 'auth'
+  name: string
+  properties: Property[]
+  span: Span
+}
+
 export type TopLevelBlock =
   | DataBlock
   | ScreenBlock
@@ -164,6 +171,7 @@ export type TopLevelBlock =
   | EventBlock
   | ConfigBlock
   | DeployBlock
+  | AuthBlock
 
 export interface ClearFile {
   product: ProductBlock

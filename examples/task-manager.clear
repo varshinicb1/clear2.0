@@ -1,0 +1,243 @@
+product TaskManager
+    name "Full-Stack Task Manager"
+    version "1.0"
+    description "A complete task management app with kanban board, user assignments, and priority tracking"
+
+data User
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field email
+        type email
+        required true
+        unique true
+    field avatar_url
+        type url
+
+data Task
+    field id
+        type uuid
+        primary true
+    field title
+        type string
+        required true
+        min_length 1
+        max_length 200
+    field description
+        type string
+    field status
+        type enum
+        options ["backlog", "todo", "in_progress", "review", "done"]
+        default "todo"
+    field priority
+        type enum
+        options ["low", "medium", "high", "urgent"]
+        default "medium"
+    field assignee
+        type reference User
+    field due_date
+        type timestamp
+    field tags
+        type list of string
+    field created_at
+        type timestamp
+        default now
+    field updated_at
+        type timestamp
+        default now
+
+data Project
+    field id
+        type uuid
+        primary true
+    field name
+        type string
+        required true
+    field description
+        type string
+    field owner
+        type reference User
+    field created_at
+        type timestamp
+        default now
+
+api REST /api/tasks
+    get /
+        return list of Task
+        paginate 50 per page
+        filter by status, priority, assignee
+        sort by created_at desc
+
+    get /:id
+        return Task by id
+        include assignee details
+        error 404 if not found
+
+    post /
+        accept title, description, status, priority, assignee, due_date, tags
+        validate with rules
+        set created_at to now
+        return created Task
+        status 201
+
+    put /:id
+        accept title, description, status, priority, assignee, due_date, tags
+        set updated_at to now
+        return updated Task
+        error 404 if not found
+
+    delete /:id
+        remove Task by id
+        status 204
+        error 404 if not found
+
+api REST /api/users
+    get /
+        return list of User
+
+    get /:id
+        return User by id
+        error 404 if not found
+
+    post /
+        accept name, email
+        return created User
+        status 201
+
+api REST /api/projects
+    get /
+        return list of Project
+
+    get /:id
+        return Project by id
+        include owner details
+        error 404 if not found
+
+    post /
+        accept name, description, owner
+        return created Project
+        status 201
+
+rule TaskValidation
+    apply to Task
+    require title is not empty
+    require due_date is in the future when creating
+
+screen Dashboard
+    title "Dashboard"
+    layout single-column
+
+    section stats
+        show tasks as stat
+            label "Total Tasks"
+        show tasks as stat
+            label "High Priority"
+            field priority
+        show tasks as stat
+            label "Completion Rate"
+            field status
+
+    section search
+        search
+            placeholder "Search tasks..."
+
+    section overview
+        show tasks as table
+        sort by created_at desc
+        limit 10
+
+screen Analytics
+    title "Analytics"
+    layout single-column
+
+    section tasks_by_status
+        show tasks as bar
+            label title
+            value priority
+
+    section distribution
+        show tasks as pie
+            label title
+            value priority
+
+    section trend
+        show tasks as line
+            label title
+            value priority
+
+screen KanbanBoard
+    title "Kanban Board"
+    layout kanban
+
+    section board
+        show tasks as kanban
+
+screen TaskForm
+    title "New Task"
+    layout single-column
+
+    section details
+        field title
+            type string
+            required true
+        field description
+            type string
+        field status
+            type enum
+            options ["backlog", "todo", "in_progress", "review", "done"]
+        field priority
+            type enum
+            options ["low", "medium", "high", "urgent"]
+        field assignee
+            type reference User
+        field due_date
+            type timestamp
+        button "Create Task"
+            action create_task
+            style primary large
+
+screen Calendar
+    title "Calendar"
+    layout single-column
+
+    section schedule
+        show tasks as calendar
+            date due_date
+
+screen Timeline
+    title "Project Timeline"
+    layout single-column
+
+    section roadmap
+        show tasks as timeline
+            date created_at
+
+screen DataGrid
+    title "Data Grid"
+    layout single-column
+
+    section data
+        show tasks as datagrid
+
+screen UserList
+    title "Team"
+    layout single-column
+
+    section team
+        show users as list
+
+auth Default
+    accept email, password, name
+    session jwt
+        expire 7 days
+
+config development
+    log_level "info"
+    port 8080
+
+deploy cloudflare-workers
+    routes /api/*
+    routes /s/*

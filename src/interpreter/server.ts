@@ -14,20 +14,30 @@ export interface RequestContext {
   params: Record<string, string>
   query: Record<string, string>
   body: any
+  headers: Record<string, string>
   method: string
   path: string
   status?: number
   responseBody?: any
+  responseType?: 'json' | 'html' | 'redirect'
+  responseLocation?: string
 }
+
+/** Default maximum response body size in bytes (10 MB) */
+const DEFAULT_MAX_RESPONSE_SIZE = 10 * 1024 * 1024
 
 export class HttpServer {
   private routes: RouteHandler[] = []
   private server: http.Server | null = null
   private currentPort: number = 0
   private verbose: boolean = false
+  private silent: boolean = false
+  private maxResponseSize: number
 
-  constructor(verbose?: boolean) {
+  constructor(verbose?: boolean, maxResponseSize?: number, silent?: boolean) {
     this.verbose = verbose ?? false
+    this.maxResponseSize = maxResponseSize ?? DEFAULT_MAX_RESPONSE_SIZE
+    this.silent = silent ?? false
     this.createServer()
   }
 
@@ -50,7 +60,9 @@ export class HttpServer {
     if (!this.server) this.createServer()
     this.currentPort = port
     this.server!.listen(port, callback ?? (() => {
-      console.log(`🚀 Clear interpreter running on port ${port}`)
+      if (!this.silent) {
+        console.log(`🚀 Clear interpreter running on port ${port}`)
+      }
     }))
   }
 
@@ -119,6 +131,7 @@ export class HttpServer {
       params,
       query,
       body,
+      headers: req.headers as Record<string, string>,
     }
 
     const startTime = Date.now()
@@ -128,7 +141,15 @@ export class HttpServer {
       // Read back the status and body set by the handler
       const status = context.status ?? 200
       const body = context.responseBody
-      if (status === 204) {
+      const rtype = context.responseType ?? 'json'
+
+      if (rtype === 'redirect' && context.responseLocation) {
+        res.writeHead(302, { 'Location': context.responseLocation })
+        res.end()
+      } else if (rtype === 'html' && typeof body === 'string') {
+        res.writeHead(status, { 'Content-Type': 'text/html; charset=utf-8' })
+        res.end(body)
+      } else if (status === 204) {
         res.writeHead(204)
         res.end()
       } else if (body !== undefined) {
@@ -209,7 +230,20 @@ export class HttpServer {
   }
 
   private sendJson(res: http.ServerResponse, status: number, data: any): void {
+    const json = JSON.stringify(data)
+
+    // Check response size before sending (byte-accurate for non-ASCII content)
+    const byteLength = Buffer.byteLength(json, 'utf-8')
+    if (byteLength > this.maxResponseSize) {
+      const body = JSON.stringify({
+        error: `Response too large: ${byteLength} bytes exceeds limit of ${this.maxResponseSize} bytes`,
+      })
+      res.writeHead(413, { 'Content-Type': 'application/json' })
+      res.end(body)
+      return
+    }
+
     res.writeHead(status, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify(data))
+    res.end(json)
   }
 }

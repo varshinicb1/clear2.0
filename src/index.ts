@@ -8,7 +8,7 @@ import { generateCode, CodegenOptions } from './codegen/index.js'
 import { runInterpreter } from './interpreter/index.js'
 import { ClearFile, ParseError } from './ast.js'
 
-const VERSION = '0.2.0'
+const VERSION = '0.3.0'
 
 function formatError(error: ParseError, source: string, filename: string): string {
   const lines = source.split(/\r?\n/)
@@ -73,7 +73,7 @@ USAGE:
   clear check <file.clear>         Parse and validate a .clear file
   clear build <file.clear> [opts]  Generate code from a .clear file
   clear run <file.clear>           Run a .clear file (direct execution)
-  clear init <name>                Create a new Clear project
+  clear init [name] [opts]         Create a new Clear project from a template
   clear --help                     Show this help
   clear --version                  Show version
 
@@ -82,16 +82,32 @@ OPTIONS (build):
   --out <file>                             Output file path (default: stdout)
 
 OPTIONS (run):
-  --port <number>   Port to run the interpreter on (default: 8080)
-  --watch           Watch file for changes and hot reload
-  --verbose         Log all HTTP requests with status codes and timing
+  --port <number>              Port to run the interpreter on (default: 8080)
+  --watch                      Watch file for changes and hot reload
+  --verbose                    Log all HTTP requests with status codes and timing
+  --silent                     Suppress all startup output (banner, routes, port message)
+  --resolve-depth <num>        Nested reference resolution depth (default: 3, 0 to disable)
+  --max-response-size <bytes>  Maximum response body size in bytes (default: 10485760)
+
+OPTIONS (init):
+  --template <name>            Template to use (default, todo-api)
+
+AVAILABLE TEMPLATES:
+  default    Basic project with Item CRUD and a Hello flow
+  todo-api   Full-featured Todo API with CRUD, filtering, pagination, and validation
 
 EXAMPLES:
   clear check app.clear
   clear build app.clear --target express --out app.ts
   clear run app.clear
   clear run app.clear --port 3000 --verbose
-  clear init my-project
+  clear run app.clear --silent --verbose  # quiet startup, only request logs
+  clear run app.clear --resolve-depth 5
+  clear run app.clear --resolve-depth 0  # disable reference resolution
+  clear run app.clear --max-response-size 100000  # limit to ~100KB
+  clear init my-app                          # default template
+  clear init todo-api                        # todo-api template
+  clear init my-app --template todo-api      # explicit template
 `)
 }
 
@@ -262,31 +278,35 @@ async function cmdRun(args: string[]) {
   const port = portFlag >= 0 && args[portFlag + 1] ? parseInt(args[portFlag + 1], 10) : undefined
   const watch = args.includes('--watch')
   const verbose = args.includes('--verbose')
+  const silent = args.includes('--silent')
+  const depthFlag = args.indexOf('--resolve-depth')
+  const maxResolveDepth = depthFlag >= 0 && args[depthFlag + 1] ? parseInt(args[depthFlag + 1], 10) : undefined
+  const sizeFlag = args.indexOf('--max-response-size')
+  const maxResponseSize = sizeFlag >= 0 && args[sizeFlag + 1] ? parseInt(args[sizeFlag + 1], 10) : undefined
 
   // Resolve the file path for watching
   const resolvedPath = path.resolve(filepath)
 
   // Run the interpreter
   try {
-    runInterpreter(result.ast, { port, watch: watch ? resolvedPath : undefined, verbose })
+    runInterpreter(result.ast, { port, watch: watch ? resolvedPath : undefined, verbose, silent, maxResolveDepth, maxResponseSize })
   } catch (err: any) {
     console.error('Interpreter error:', err.message)
     process.exit(1)
   }
 }
 
-async function cmdInit(args: string[]) {
-  const name = args[0] || 'my-app'
-  const dir = path.resolve(process.cwd(), name)
+// ── Templates ───────────────────────────────────────────────────────
 
-  if (fs.existsSync(dir)) {
-    console.error(`Directory '${name}' already exists`)
-    process.exit(1)
-  }
+interface Template {
+  description: string
+  content: (name: string) => string
+}
 
-  fs.mkdirSync(dir, { recursive: true })
-
-  const template = `product ${name.charAt(0).toUpperCase() + name.slice(1)}
+const TEMPLATES: Record<string, Template> = {
+  'default': {
+    description: 'Basic project with Item CRUD and a Hello flow',
+    content: (name: string) => `product ${name.charAt(0).toUpperCase() + name.slice(1)}
     name "${name}"
     version "0.1"
     description "A Clear project"
@@ -313,12 +333,143 @@ config development
 
 deploy cloudflare-workers
     memory 128mb
-`
+`,
+  },
+  'todo-api': {
+    description: 'Full-featured Todo API with CRUD, filtering, pagination, and validation',
+    content: (name: string) => {
+      const pascal = name.split(/[-_\s]/).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('')
+      return `product ${pascal}
+    name "${name}"
+    version "0.1"
+    description "A full-featured Todo API with filtering, pagination, and validation"
 
-  fs.writeFileSync(path.join(dir, 'main.clear'), template, 'utf-8')
+data Task
+    field id
+        type uuid
+        primary true
+    field title
+        type string
+        required true
+    field description
+        type string
+    field status
+        type enum
+        options ["todo", "in_progress", "done"]
+        default "todo"
+    field priority
+        type enum
+        options ["low", "medium", "high", "urgent"]
+        default "medium"
+    field due_date
+        type timestamp
+    field created_at
+        type timestamp
+        default now
+    field updated_at
+        type timestamp
+        default now
+
+api REST /tasks
+    get /
+        return list of Task
+        paginate 20 per page
+        filter by status, priority
+        sort by created_at desc
+
+    get /:id
+        return Task by id
+        error 404 if not found
+
+    post /
+        accept title, description, priority, due_date
+        set created_at to now
+        validate with rules
+        return created Task
+        status 201
+
+    put /:id
+        accept title, description, status, priority, due_date
+        set updated_at to now
+        return updated Task
+        error 404 if not found
+
+    delete /:id
+        status 204
+        error 404 if not found
+
+rule TaskValidation
+    apply to Task
+    require title is not empty
+
+config development
+    log_level "info"
+
+deploy cloudflare-workers
+    memory 128mb
+`
+    },
+  },
+}
+
+async function cmdInit(args: string[]) {
+  const templateFlag = args.indexOf('--template')
+  const explicitTemplate = templateFlag >= 0 && args[templateFlag + 1] ? args[templateFlag + 1] : null
+
+  // Determine template: explicit --template flag, or match first arg to template name
+  let templateName = explicitTemplate ?? 'default'
+  let name: string
+
+  if (explicitTemplate) {
+    // Name is the first non-flag argument (skip --template and its value)
+    const nameArg = args.find(a => !a.startsWith('--'))
+    name = nameArg || 'my-app'
+  } else {
+    // No --template flag: check if first arg matches a template name
+    const firstArg = args[0]
+    if (!firstArg) {
+      // No args at all — list templates
+      console.log(`\nClear v${VERSION} — Available templates:\n`)
+      for (const [key, tpl] of Object.entries(TEMPLATES)) {
+        console.log(`  ${key.padEnd(15)} ${tpl.description}`)
+      }
+      console.log(`\nUsage: clear init <name> [--template <name>]`)
+      console.log(`  clear init my-app`)
+      console.log(`  clear init todo-api`)
+      console.log(`  clear init my-app --template todo-api\n`)
+      return
+    }
+    if (TEMPLATES[firstArg]) {
+      templateName = firstArg
+      name = firstArg
+    } else {
+      templateName = 'default'
+      name = firstArg
+    }
+  }
+
+  // Fall back to default if template not found
+  if (!TEMPLATES[templateName]) {
+    console.error(`Unknown template: ${templateName}`)
+    console.error(`Available templates: ${Object.keys(TEMPLATES).join(', ')}`)
+    process.exit(1)
+  }
+
+  const dir = path.resolve(process.cwd(), name)
+
+  if (fs.existsSync(dir)) {
+    console.error(`Directory '${name}' already exists`)
+    process.exit(1)
+  }
+
+  fs.mkdirSync(dir, { recursive: true })
+
+  const content = TEMPLATES[templateName].content(name)
+
+  fs.writeFileSync(path.join(dir, 'main.clear'), content, 'utf-8')
   fs.writeFileSync(path.join(dir, '.gitignore'), 'node_modules/\ndist/\n.clear-tmp.ts\n')
 
-  console.log(`\x1b[32m✓ Initialized Clear project '${name}'\x1b[0m`)
+  console.log(`\x1b[32m✓ Initialized Clear project '${name}' (template: ${templateName})\x1b[0m`)
   console.log(`  cd ${name}`)
   console.log(`  clear check main.clear`)
   console.log(`  clear run main.clear`)

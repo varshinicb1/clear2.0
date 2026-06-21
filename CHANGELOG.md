@@ -4,6 +4,26 @@ All notable changes to the Clear language specification will be documented in th
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.0] — 2026-06-21
+
+### Added
+
+- Direct execution interpreter — `clear run` starts a live HTTP server from `.clear` files
+- Flow executor with full lifecycles: extract, transform, load, and conditional upsert logic
+- `--verbose` flag for HTTP request logging with status codes and timing
+- `--silent` flag to suppress all startup output (banner, routes, port message)
+- `--watch` flag for hot-reload on file changes
+- `--resolve-depth` option for nested reference resolution in API responses
+- `--max-response-size` option to limit response body size
+- `clear init` template system with `todo-api` template (Task CRUD, filtering, pagination, validation)
+- Integration tests for interpreter, flow executor, and REST API
+- Generated code targets: Express, Hono, Fastify, Koa
+
+### Changed
+
+- Published to npm as `@varshinicb1/clear`
+- Auto-publish CI/CD workflow on version tags
+
 ## [0.2.0] — 2026-06-21
 
 ### Added

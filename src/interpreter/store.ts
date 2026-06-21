@@ -2,6 +2,7 @@
 // Each Data block gets its own store instance
 
 import crypto from 'crypto'
+import { saveStore, loadStore } from './persistence.js'
 
 export interface FilterQuery {
   field: string
@@ -29,9 +30,27 @@ export interface PaginatedResult<T> {
 export class Store<T extends Record<string, any>> {
   private records: T[] = []
   private idField: string = 'id'
+  private _storeName: string = ''
+  private _autoSave: boolean = false
 
   constructor(idField: string = 'id') {
     this.idField = idField
+  }
+
+  /** Enable auto-persistence for this store */
+  setPersistence(storeName: string, enable: boolean = true): void {
+    this._storeName = storeName
+    this._autoSave = enable
+    if (enable) {
+      const saved = loadStore(storeName)
+      if (saved.length > 0) this.records = saved as T[]
+    }
+  }
+
+  private persist(): void {
+    if (this._autoSave && this._storeName) {
+      saveStore(this._storeName, this.records)
+    }
   }
 
   /** Generate a UUID v4 (no dash variant for brevity) */
@@ -99,6 +118,7 @@ export class Store<T extends Record<string, any>> {
       [this.idField]: data[this.idField] ?? Store.generateId(),
     } as T
     this.records.push(record)
+    this.persist()
     return record
   }
 
@@ -111,6 +131,7 @@ export class Store<T extends Record<string, any>> {
       ...updates,
       [this.idField]: id,
     }
+    this.persist()
     return this.records[index]
   }
 
@@ -119,6 +140,7 @@ export class Store<T extends Record<string, any>> {
     const index = this.records.findIndex(r => (r as any)[this.idField] === id)
     if (index === -1) return undefined
     const deleted = this.records.splice(index, 1)[0]
+    this.persist()
     return deleted
   }
 
@@ -127,8 +149,14 @@ export class Store<T extends Record<string, any>> {
     return this.records.length
   }
 
+  /** Get all records (raw array) */
+  getAll(): T[] {
+    return this.records
+  }
+
   /** Clear all records */
   clear(): void {
     this.records = []
+    this.persist()
   }
 }

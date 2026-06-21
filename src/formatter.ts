@@ -40,6 +40,7 @@ function formatTopLevelBlock(block: TopLevelBlock): string[] {
     case 'event': return formatEventBlock(block)
     case 'config': return formatConfigBlock(block)
     case 'deploy': return formatDeployBlock(block)
+    case 'auth': return [`auth ${(block as any).name || 'default'}`]
   }
 }
 

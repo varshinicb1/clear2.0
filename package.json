@@ -1,7 +1,7 @@
 {
   "name": "@varshinicb1/clear",
   "version": "0.3.0",
-  "description": "Clear — English to Machine Code. Nothing between.",
+  "description": "Clear — English to Machine Code. Nothing between. Write the spec, run the server.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
@@ -23,12 +23,35 @@
   "keywords": [
     "clear",
     "language",
-    "specification",
     "declarative",
-    "agent-first"
+    "specification",
+    "REST",
+    "API",
+    "code-generation",
+    "interpreter",
+    "low-code",
+    "no-code",
+    "agent-first",
+    "ETL",
+    "workflow",
+    "CLI"
   ],
   "author": "varshinicb1 (https://github.com/varshinicb1)",
   "license": "MIT",
+  "homepage": "https://github.com/varshinicb1/clear2.0",
+  "bugs": {
+    "url": "https://github.com/varshinicb1/clear2.0/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/varshinicb1/clear2.0.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "c8": "^11.0.0",

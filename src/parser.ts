@@ -634,9 +634,16 @@ export function parse(source: string, filename: string = '<stdin>'): ParseResult
           blocks.push({ type: 'deploy', target, properties, span: { start, end: loc() } })
           break
         }
+        case 'auth': {
+          const name = parts[1] || 'default'
+          pos++
+          const properties = parseProperties(lineIndent)
+          blocks.push({ type: 'auth', name, properties, span: { start, end: loc() } })
+          break
+        }
         default: {
           errors.push({
-            message: `Unknown keyword '${keyword}'. Expected one of: data, screen, flow, rule, example, agent, skill, api, event, config, deploy`,
+            message: `Unknown keyword '${keyword}'. Expected one of: data, screen, flow, rule, example, agent, skill, api, event, config, deploy, auth`,
             span: { start, end: loc() },
           })
           pos++

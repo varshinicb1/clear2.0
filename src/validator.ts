@@ -53,6 +53,9 @@ export function validate(ast: ClearFile): ValidationResult {
       case 'deploy':
         validateDeploy(block, errors)
         break
+      case 'auth':
+        validateAuth(block, errors)
+        break
       case 'example':
         validateExample(block, errors)
         break
@@ -190,6 +193,12 @@ function validateConfig(block: any, errors: ParseError[]) {
 function validateDeploy(block: any, errors: ParseError[]) {
   if (!block.target) {
     errors.push({ message: 'Deploy block must specify a target (e.g., cloudflare-workers, docker)', span: block.span })
+  }
+}
+
+function validateAuth(block: any, errors: ParseError[]) {
+  if (!block.properties.some((p: any) => p.key === 'signup' || p.args.join(' ').includes('password'))) {
+    errors.push({ message: 'Auth block should specify signup config (e.g., accept email, password)', span: block.span })
   }
 }
 

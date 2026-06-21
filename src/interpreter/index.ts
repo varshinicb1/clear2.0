@@ -9,6 +9,8 @@ import { ClearFile, Property, ApiRoute } from '../ast.js'
 import { Store, FilterQuery, SortConfig, PaginationConfig, PaginatedResult } from './store.js'
 import { HttpServer, RequestContext } from './server.js'
 import { registerFlows, stopAllFlows } from './flow.js'
+import { registerScreens } from './renderer.js'
+import { parseAuthConfig, registerAuth } from './auth.js'
 
 // ── Field info extraction (mirrors codegen/common.ts patterns) ─────
 
@@ -158,10 +160,12 @@ function collectDataModels(ast: ClearFile): Map<string, DataModel> {
         const referenceTarget = isReference ? typeStr.slice(10).trim() : null
         return { name: f.name, type: typeStr, required, defaultValue, isReference, referenceTarget, enumOptions }
       })
+      const store = new Store()
+      store.setPersistence(storeName, true)
       models.set(b.name, {
         name: b.name,
         storeName,
-        store: new Store(),
+        store,
         fields,
       })
     }
@@ -194,27 +198,54 @@ function resolveDataModel(
   return null
 }
 
+/** Maximum nested reference depth to prevent infinite recursion.
+ * Can be overridden via InterpreterOptions.maxResolveDepth. */
+let MAX_REF_DEPTH = 3
+
+/**
+ * Build a unique key for a record to detect circular references.
+ * Format: "ModelName:recordId"
+ */
+function refKey(modelName: string, record: Record<string, any>): string {
+  const id = record['id'] ?? record['_id'] ?? JSON.stringify(record)
+  return `${modelName}:${id}`
+}
+
 /**
  * Auto-resolve all reference fields on an item, replacing reference IDs with
  * the full referenced records from their respective stores.
+ * Resolves nested references up to MAX_REF_DEPTH levels deep.
+ * Uses a visited set to prevent infinite loops from circular references.
  */
 function resolveItem(
   item: Record<string, any>,
   dataModel: DataModel,
   models: Map<string, DataModel>,
+  depth: number = MAX_REF_DEPTH,
+  visited?: Set<string>,
 ): Record<string, any> {
+  if (depth <= 0) return { ...item }
+
+  const visitedSet = visited ?? new Set<string>()
+  const myKey = refKey(dataModel.name, item)
+  if (visitedSet.has(myKey)) return { ...item }
+
   const result = { ...item }
+  visitedSet.add(myKey)
+
   for (const field of dataModel.fields) {
     if (field.isReference && result[field.name] !== undefined && result[field.name] !== null) {
       const refModel = models.get(field.referenceTarget!)
       if (refModel) {
         const refRecord = refModel.store.findById(result[field.name])
         if (refRecord) {
-          result[field.name] = refRecord
+          // Recursively resolve nested references on the referenced record
+          result[field.name] = resolveItem(refRecord, refModel, models, depth - 1, visitedSet)
         }
       }
     }
   }
+
   return result
 }
 
@@ -612,18 +643,35 @@ function setupServer(
     registerApiRoutes(b, models, ruleBlocks, server)
   }
 
+  // Register auth routes (if auth block present)
+  const authBlocks = ast.blocks.filter(b => b.type === 'auth')
+  for (const block of authBlocks) {
+    const b = block as any
+    const authConfig = parseAuthConfig(b.properties)
+    const userModel = models.get('User')
+    if (userModel) {
+      registerAuth(authConfig, userModel.store, server, { verbose: false })
+      console.log(`  🔐 Auth enabled (${b.name})`)
+    }
+  }
+
+  // Register screen routes (UI pages)
+  registerScreens(ast, models, server)
+
   return models
 }
 
-function printRoutes(ast: ClearFile): { modelCount: number; routeCount: number } {
+function printRoutes(ast: ClearFile): { modelCount: number; routeCount: number; screenCount: number } {
   const models = collectDataModels(ast)
   const apiBlocks = ast.blocks.filter(b => b.type === 'api')
+  const screenBlocks = ast.blocks.filter(b => b.type === 'screen')
 
   let routeCount = 0
   console.log(`\n  ${'_'.repeat(40)}`)
   console.log(`  📦 Clear Interpreter v0.4`)
   console.log(`  Product: ${ast.product.name}`)
   console.log(`  Models:  ${models.size} data types`)
+  if (screenBlocks.length) console.log(`  Screens: ${screenBlocks.length} UI pages`)
 
   for (const block of apiBlocks) {
     const b = block as any
@@ -638,9 +686,16 @@ function printRoutes(ast: ClearFile): { modelCount: number; routeCount: number }
     }
   }
   console.log(`  Routes:  ${routeCount} API endpoints`)
+  if (screenBlocks.length) {
+    console.log(`  Screens:`)
+    for (const s of screenBlocks) {
+      const slug = (s.name as string).replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '')
+      console.log(`  ${' '.repeat(8)}GET /s/${slug}`)
+    }
+  }
   console.log(`  ${'_'.repeat(40)}\n`)
 
-  return { modelCount: models.size, routeCount }
+  return { modelCount: models.size, routeCount, screenCount: screenBlocks.length }
 }
 
 // ── Main interpreter function ───────────────────────────────────────
@@ -649,22 +704,34 @@ export interface InterpreterOptions {
   port?: number
   watch?: string  // file path to watch for changes
   verbose?: boolean  // log all HTTP requests
+  silent?: boolean  // suppress all startup output
+  maxResolveDepth?: number  // nested reference resolution depth (default: 3, 0 to disable)
+  maxResponseSize?: number  // max response body size in bytes (default: 10MB)
 }
 
 export function runInterpreter(ast: ClearFile, options: InterpreterOptions = {}): HttpServer {
   const port = options.port ?? 8080
 
+  // Set resolve depth (default 3, pass 0 to disable reference resolution)
+  if (options.maxResolveDepth !== undefined) {
+    MAX_REF_DEPTH = Math.max(0, options.maxResolveDepth)
+  }
+
   // Create HTTP server
-  const server = new HttpServer(options.verbose)
+  const server = new HttpServer(options.verbose, options.maxResponseSize, options.silent)
 
   // Register routes and start
   const models = setupServer(ast, server)
-  printRoutes(ast)
+  if (!options.silent) {
+    printRoutes(ast)
+  }
 
   // Register flow executors (if any)
   registerFlows(ast, models)
 
-  console.log(`🚀  http://localhost:${port}`)
+  if (!options.silent) {
+    console.log(`🚀  http://localhost:${port}`)
+  }
   server.listen(port)
 
   // Set up file watching if requested
@@ -686,7 +753,9 @@ export function runInterpreter(ast: ClearFile, options: InterpreterOptions = {})
           const parseResult = parse(source, filepath)
 
           if (parseResult.ast === null) {
-            console.log(`\n⚠️  Parse error in ${path.basename(filepath)} — keeping current server running`)
+            if (!options.silent) {
+              console.log(`\n⚠️  Parse error in ${path.basename(filepath)} — keeping current server running`)
+            }
             for (const err of parseResult.errors) {
               console.log(`   ${err.message} (${err.span.start.line}:${err.span.start.col})`)
             }
@@ -695,7 +764,9 @@ export function runInterpreter(ast: ClearFile, options: InterpreterOptions = {})
 
           const validation = validate(parseResult.ast)
           if (!validation.valid) {
-            console.log(`\n⚠️  Validation error — keeping current server running`)
+            if (!options.silent) {
+              console.log(`\n⚠️  Validation error — keeping current server running`)
+            }
             for (const err of validation.errors) {
               console.log(`   ${err.message} (${err.span.start.line}:${err.span.start.col})`)
             }
@@ -709,12 +780,18 @@ export function runInterpreter(ast: ClearFile, options: InterpreterOptions = {})
           await server.close()
           const freshModels = setupServer(parseResult.ast, server)
           registerFlows(parseResult.ast, freshModels)
-          console.log(`\n🔄  Reloaded ${path.basename(filepath)} (${Date.now() - startTime}ms — stores reset)`)
+          if (!options.silent) {
+            console.log(`\n🔄  Reloaded ${path.basename(filepath)} (${Date.now() - startTime}ms — stores reset)`)
+          }
           server.listen(port, () => {
-            console.log(`👀  Watching ${path.basename(filepath)} for changes...`)
+            if (!options.silent) {
+              console.log(`👀  Watching ${path.basename(filepath)} for changes...`)
+            }
           })
         } catch (err: any) {
-          console.log(`\n⚠️  Error reloading: ${err.message}`)
+          if (!options.silent) {
+            console.log(`\n⚠️  Error reloading: ${err.message}`)
+          }
         }
       }, 300)
     })
