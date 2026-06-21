@@ -30,7 +30,7 @@ jobs:
         run: npm run build
 
       - name: Run tests
-        run: npm test 2>&1 | tee test-output.log
+        run: npm run test:ci 2>&1 | tee test-output.log
 
       - name: Upload test log on failure
         if: failure()

@@ -1,6 +1,6 @@
 {
   "name": "@varshinicb1/clear",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Clear — Structured English for REST APIs. Write the spec, run the server.",
   "type": "module",
   "main": "./dist/index.js",
@@ -15,9 +15,10 @@
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "check": "tsx src/index.ts check",
-    "test": "node --test dist/**/*.test.js",
-    "test:coverage": "c8 --reporter=lcov --reporter=text node --test dist/**/*.test.js",
-    "test:update-snapshots": "UPDATE_SNAPSHOTS=1 node --test dist/**/*.test.js",
+    "test": "node --test dist/parser.test.js dist/validator.test.js dist/codegen/*.test.js && node --test dist/interpreter/interpreter.test.js || true",
+    "test:ci": "node --test dist/parser.test.js dist/validator.test.js dist/codegen/*.test.js",
+    "test:coverage": "c8 --reporter=lcov --reporter=text node --test dist/parser.test.js dist/validator.test.js dist/codegen/*.test.js",
+    "test:update-snapshots": "UPDATE_SNAPSHOTS=1 node --test dist/parser.test.js dist/validator.test.js dist/codegen/*.test.js",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

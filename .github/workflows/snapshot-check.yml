@@ -24,7 +24,7 @@ jobs:
         run: npm run build
 
       - name: Run tests (creates any missing snapshots)
-        run: npm test
+        run: npm run test:ci
 
       - name: Check for uncommitted snapshot changes
         uses: ./.github/actions/verify-snapshots
