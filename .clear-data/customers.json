@@ -1,0 +1,30 @@
+[
+  {
+    "id": "082cbdcc-1783-4c65-a089-9600f7e25cc3",
+    "email": "alice.0@example.com",
+    "name": "Alice Smith",
+    "source": "test",
+    "synced_at": "2026-06-21T21:48:01.305Z"
+  },
+  {
+    "id": "a6c6a8b1-e114-4499-93ef-fbc0b2a7ad0f",
+    "email": "bob.1@test.org",
+    "name": "Bob Jones",
+    "source": "test",
+    "synced_at": "2026-06-21T21:48:01.305Z"
+  },
+  {
+    "id": "501002e0-5ef3-4a02-b565-cb4bda9c334b",
+    "email": "charlie.2@demo.net",
+    "name": "Charlie Lee",
+    "source": "test",
+    "synced_at": "2026-06-21T21:48:01.305Z"
+  },
+  {
+    "id": "388aca67-416a-4600-b01a-1d3d367cd7ba",
+    "email": "diana.3@sample.io",
+    "name": "Diana Kim",
+    "source": "test",
+    "synced_at": "2026-06-21T21:48:01.305Z"
+  }
+]

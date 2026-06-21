@@ -16,5 +16,37 @@
     "name": "E2E Test",
     "password": "hash_d3lcvz",
     "id": "f90bc65d-132f-4974-99c0-0d2d3798e250"
+  },
+  {
+    "name": "Alice",
+    "email": "alice@example.com",
+    "id": "d74363fe-2c3d-4ffa-90f9-80389416514e"
+  },
+  {
+    "name": "Bob",
+    "email": "bob@example.com",
+    "id": "443e940a-5d74-40e2-9f56-24486a16bb93"
+  },
+  {
+    "name": "Alice",
+    "email": "alice@co.com",
+    "team": "f0ef4cd7-7855-4614-9f10-b3620ecbe8b6",
+    "id": "9fb7172a-7b3b-4bae-9114-afb0dcaf427b"
+  },
+  {
+    "name": "Alice",
+    "email": "alice@example.com",
+    "id": "54105b1a-6239-4879-bed2-0fe9bf0e56b3"
+  },
+  {
+    "name": "Bob",
+    "email": "bob@example.com",
+    "id": "3576bc15-96bd-474e-9be3-dd1f6c26a818"
+  },
+  {
+    "name": "Alice",
+    "email": "alice@co.com",
+    "team": "4ca67319-d59a-4efd-a953-71ef00298a5d",
+    "id": "3d22a5f5-ad37-4823-9b10-0b8716e5a070"
   }
 ]
