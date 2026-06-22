@@ -52,8 +52,6 @@ Run it:
 clear-cli run app.clear
 ```
 
-<img src="docs/assets/terminal-output.png" alt="Clear CLI terminal output showing running server with REST API and Web UI endpoints" width="720" />
-
 | | |
 |---|---|
 | 🌐 **REST API** | `http://localhost:8080/api/tasks` |
@@ -64,15 +62,11 @@ clear-cli run app.clear
 
 **No database. No ORM. No frontend framework. No Docker. No config files.**
 
-Create a task with a single POST request:
-
-<img src="docs/assets/api-response.png" alt="curl POST to create a task — auto-generated UUID, status and priority returned as JSON" width="720" />
-
 ---
 
 ## ✨ How It Works
 
-<img src="docs/assets/workflow.png" alt="Clear workflow: Write .clear file → Parse + Validate → clear-cli run → REST API + Web UI" width="800" />
+**Write → Run → Ship.** One `.clear` file replaces your entire backend stack.
 
 ### One file is all you need
 
@@ -88,8 +82,6 @@ Create a task with a single POST request:
 | Nothing | CORS, JSON parsing, error handling |
 
 ### Your dashboard, instantly
-
-<img src="docs/assets/dashboard-preview.png" alt="Clear Web UI Dashboard showing stat cards and task table" width="720" />
 
 Auto-generated from `screen Dashboard` — tables, charts, kanban, forms, all rendered server-side as HTML/SVG.
 
