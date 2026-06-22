@@ -10,7 +10,7 @@
   "engines": { "vscode": "^1.85.0" },
   "categories": ["Programming Languages", "Snippets", "Linters"],
   "keywords": ["clear", "api", "rest", "specification", "language", "low-code"],
-  "icon": "icon.png",
+  "icon": "icon.svg",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
