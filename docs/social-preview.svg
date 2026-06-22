@@ -1,68 +1,195 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="0%" stop-color="#0b1120"/>
       <stop offset="100%" stop-color="#1e293b"/>
     </linearGradient>
     <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#3b82f6"/>
       <stop offset="100%" stop-color="#22d3ee"/>
     </linearGradient>
+    <linearGradient id="heroGlow" x1="0" y1="0" x2="0" y="1">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+    </pattern>
   </defs>
 
+  <!-- Background -->
   <rect width="1280" height="640" fill="url(#bg)"/>
+  <rect width="1280" height="640" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Top accent bar -->
   <rect width="1280" height="3" fill="url(#accent)"/>
+
+  <!-- Hero glow behind text -->
+  <rect x="0" y="140" width="600" height="200" fill="url(#heroGlow)" rx="100"/>
 
   <!-- Brand -->
   <text x="48" y="48" font-family="'Segoe UI', Arial, sans-serif" font-size="22" font-weight="800" fill="#ffffff">Clear</text>
   <text x="48" y="66" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#64748b">Write the spec. Run the server.</text>
 
-  <!-- Large C watermark -->
-  <text x="1050" y="200" font-family="'Segoe UI', Arial, sans-serif" font-size="200" font-weight="900" fill="#1e293b" opacity="0.3">C</text>
+  <!-- Version badge -->
+  <rect x="108" y="30" width="56" height="18" rx="9" fill="#3b82f6"/>
+  <text x="136" y="43" font-family="'Segoe UI', Arial, sans-serif" font-size="10" font-weight="700" fill="#ffffff" text-anchor="middle">v0.4.3</text>
+
+  <!-- Large "C" watermark -->
+  <text x="1080" y="180" font-family="'Segoe UI', Arial, sans-serif" font-size="180" font-weight="900" fill="#1e293b" opacity="0.4">C</text>
 
   <!-- Hero -->
-  <text x="48" y="220" font-family="'Segoe UI', Arial, sans-serif" font-size="62" font-weight="800" fill="#ffffff" letter-spacing="-1">One .clear file.</text>
-  <text x="48" y="300" font-family="'Segoe UI', Arial, sans-serif" font-size="62" font-weight="800" fill="#3b82f6" letter-spacing="-1">Running server.</text>
+  <text x="48" y="200" font-family="'Segoe UI', Arial, sans-serif" font-size="56" font-weight="800" fill="#ffffff" letter-spacing="-1">One .clear file</text>
+  <text x="48" y="270" font-family="'Segoe UI', Arial, sans-serif" font-size="56" font-weight="800" fill="#60a5fa" letter-spacing="-1">Instant REST API + Web UI</text>
 
-  <!-- Sub -->
-  <text x="48" y="370" font-family="'Segoe UI', Arial, sans-serif" font-size="18" fill="#94a3b8">REST API + Web UI — Auth, Persistence, 7 Codegen Targets</text>
+  <!-- Details as pills -->
+  <g font-family="'Segoe UI', Arial, sans-serif" font-size="12" font-weight="600">
+    <!-- Row 1 -->
+    <rect x="48" y="320" width="85" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="90" y="338" fill="#93c5fd" text-anchor="middle">Parser</text>
 
-  <!-- Install -->
-  <rect x="48" y="410" width="500" height="52" rx="6" fill="#000000" stroke="#334155" stroke-width="1"/>
-  <text x="64" y="442" font-family="'Courier New', monospace" font-size="17" fill="#4ade80">npm install -g varshinicb-clear</text>
+    <rect x="145" y="320" width="95" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="192" y="338" fill="#c4b5fd" text-anchor="middle">Validator</text>
 
-  <!-- CTA -->
-  <text x="48" y="520" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#94a3b8">Then create a .clear file and run:</text>
-  <rect x="48" y="540" width="360" height="42" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-  <text x="64" y="567" font-family="'Courier New', monospace" font-size="15" fill="#fbbf24">clear-cli run app.clear</text>
+    <rect x="252" y="320" width="105" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="304" y="338" fill="#67e8f9" text-anchor="middle">Interpreter</text>
 
-  <!-- Code window -->
-  <rect x="660" y="100" width="570" height="440" rx="8" fill="#000000" stroke="#334155" stroke-width="1"/>
-  <rect x="660" y="100" width="570" height="32" rx="8" fill="#1e293b"/>
-  <rect x="660" y="116" width="570" height="16" fill="#1e293b"/>
+    <rect x="369" y="320" width="95" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="416" y="338" fill="#4ade80" text-anchor="middle">7 Codegen</text>
 
-  <circle cx="685" cy="116" r="5" fill="#ef4444"/>
-  <circle cx="705" cy="116" r="5" fill="#eab308"/>
-  <circle cx="725" cy="116" r="5" fill="#22c55e"/>
-  <text x="745" y="120" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#64748b">app.clear</text>
+    <!-- Row 2 -->
+    <rect x="48" y="356" width="75" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="85" y="374" fill="#fbbf24" text-anchor="middle">Auth</text>
 
-  <!-- Code -->
-  <g font-family="'Courier New', monospace" font-size="13">
-    <text x="678" y="166" fill="#93c5fd" font-weight="700">data Task</text>
-    <text x="678" y="192" fill="#e2e8f0">    field id       type <tspan fill="#fbbf24" font-weight="600">uuid</tspan>     primary <tspan fill="#4ade80">true</tspan></text>
-    <text x="678" y="218" fill="#e2e8f0">    field title    type <tspan fill="#fbbf24" font-weight="600">string</tspan>   required <tspan fill="#4ade80">true</tspan></text>
-    <text x="678" y="244" fill="#e2e8f0">    field status   type <tspan fill="#fbbf24" font-weight="600">enum</tspan>   options <tspan fill="#4ade80">["todo","done"]</tspan></text>
-    <text x="678" y="296" fill="#93c5fd" font-weight="700">api REST /tasks</text>
-    <text x="678" y="322" fill="#e2e8f0">    get /   return list of Task</text>
-    <text x="678" y="348" fill="#e2e8f0">    post /  accept title</text>
-    <text x="678" y="374" fill="#e2e8f0">            return created Task  status <tspan fill="#4ade80">201</tspan></text>
-    <text x="678" y="426" fill="#93c5fd" font-weight="700">screen Dashboard</text>
-    <text x="678" y="452" fill="#4ade80">    section list  show tasks as table</text>
+    <rect x="135" y="356" width="85" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="177" y="374" fill="#34d399" text-anchor="middle">Persistence</text>
+
+    <rect x="232" y="356" width="95" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="279" y="374" fill="#f87171" text-anchor="middle">Flow Engine</text>
+
+    <rect x="339" y="356" width="70" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="374" y="374" fill="#3b82f6" text-anchor="middle">MCP</text>
   </g>
 
-  <!-- Bottom -->
-  <rect x="0" y="570" width="1280" height="70" fill="#0f172a" opacity="0.8"/>
-  <text x="48" y="608" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#94a3b8">github.com/varshinicb1/clear2.0</text>
-  <text x="480" y="608" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#94a3b8">MIT · Open Source · Built with TypeScript</text>
-  <text x="1020" y="610" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#fbbf24">&#9733; Star on GitHub</text>
+  <!-- Install section -->
+  <rect x="48" y="405" width="520" height="52" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="64" y="429" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#64748b">INSTALL</text>
+  <text x="64" y="445" font-family="'Courier New', monospace" font-size="17" fill="#4ade80">npm install -g varshinicb-clear</text>
+
+  <!-- Arrow to run -->
+  <text x="64" y="484" font-family="'Courier New', monospace" font-size="15" fill="#64748b">$</text>
+  <rect x="80" y="472" width="330" height="32" rx="6" fill="#000000" stroke="#334155" stroke-width="1"/>
+  <text x="90" y="494" font-family="'Courier New', monospace" font-size="14" fill="#fbbf24">clear-cli run app.clear</text>
+
+  <!-- Output hint -->
+  <text x="64" y="524" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#64748b">→ REST API at </text>
+  <text x="180" y="524" font-family="'Courier New', monospace" font-size="13" fill="#60a5fa">localhost:8080/api</text>
+  <text x="64" y="544" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#64748b">→ Web UI at </text>
+  <text x="180" y="544" font-family="'Courier New', monospace" font-size="13" fill="#60a5fa">localhost:8080/s/dashboard</text>
+
+  <!-- ===== CODE WINDOW ===== -->
+  <rect x="660" y="60" width="570" height="480" rx="10" fill="#000000" stroke="#334155" stroke-width="1"/>
+
+  <!-- Code title bar -->
+  <rect x="660" y="60" width="570" height="36" rx="10" fill="#1e293b"/>
+  <rect x="660" y="78" width="570" height="18" fill="#1e293b"/>
+
+  <!-- Window dots -->
+  <circle cx="685" cy="78" r="5" fill="#ef4444"/>
+  <circle cx="705" cy="78" r="5" fill="#eab308"/>
+  <circle cx="725" cy="78" r="5" fill="#22c55e"/>
+  <text x="750" y="82" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#64748b">app.clear</text>
+
+  <!-- Code content with line numbers -->
+  <g font-family="'Courier New', monospace">
+    <!-- Line numbers -->
+    <g font-size="11" fill="#334155" text-anchor="end">
+      <text x="685" y="128">1</text>
+      <text x="685" y="152">2</text>
+      <text x="685" y="176">3</text>
+      <text x="685" y="200">4</text>
+      <text x="685" y="224">5</text>
+      <text x="685" y="248">6</text>
+      <text x="685" y="272">7</text>
+      <text x="685" y="296">8</text>
+      <text x="685" y="320">9</text>
+      <text x="685" y="344">10</text>
+      <text x="685" y="368">11</text>
+      <text x="685" y="392">12</text>
+      <text x="685" y="416">13</text>
+      <text x="685" y="440">14</text>
+      <text x="685" y="464">15</text>
+    </g>
+
+    <!-- Line separator -->
+    <line x1="700" y1="100" x2="700" y2="530" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Code lines with line number gaps -->
+    <g font-size="12">
+      <!-- L1: product -->
+      <text x="714" y="128" fill="#93c5fd" font-weight="700">product MyAPI</text>
+      <text x="714" y="128" fill="#64748b" font-family="'Segoe UI', Arial, sans-serif" font-size="9">  // Your product name</text>
+
+      <!-- L2 -->
+      <text x="714" y="152" fill="#e2e8f0">    name "My First API"</text>
+
+      <!-- L3: blank -->
+      <!-- L4: data -->
+      <text x="714" y="200" fill="#93c5fd" font-weight="700">data Task</text>
+
+      <!-- L5 -->
+      <text x="714" y="224" fill="#e2e8f0">    field id       type <tspan fill="#fbbf24" font-weight="600">uuid</tspan>     primary <tspan fill="#4ade80">true</tspan></text>
+
+      <!-- L6 -->
+      <text x="714" y="248" fill="#e2e8f0">    field title    type <tspan fill="#fbbf24" font-weight="600">string</tspan>   required <tspan fill="#4ade80">true</tspan></text>
+
+      <!-- L7 -->
+      <text x="714" y="272" fill="#e2e8f0">    field status   type <tspan fill="#fbbf24" font-weight="600">enum</tspan>   options <tspan fill="#4ade80">["todo","done"]</tspan></text>
+
+      <!-- L8: blank -->
+      <!-- L9: api -->
+      <text x="714" y="320" fill="#93c5fd" font-weight="700">api REST /tasks</text>
+
+      <!-- L10 -->
+      <text x="714" y="344" fill="#e2e8f0">    get /   return list of Task</text>
+
+      <!-- L11 -->
+      <text x="714" y="368" fill="#e2e8f0">    post /  accept title</text>
+
+      <!-- L12 -->
+      <text x="714" y="392" fill="#e2e8f0">            return created Task</text>
+      <text x="714" y="416" fill="#e2e8f0">            status <tspan fill="#4ade80">201</tspan></text>
+
+      <!-- L13: blank -->
+      <!-- L14: screen -->
+      <text x="714" y="464" fill="#93c5fd" font-weight="700">screen Dashboard</text>
+
+      <!-- L15 -->
+      <text x="714" y="488" fill="#4ade80">    section list  show tasks as table</text>
+    </g>
+  </g>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="570" width="1280" height="70" fill="#0b1120" opacity="0.9"/>
+  <rect x="0" y="570" width="1280" height="1" fill="#334155"/>
+
+  <g font-family="'Segoe UI', Arial, sans-serif">
+    <text x="48" y="608" font-size="15" fill="#94a3b8">github.com/varshinicb1/clear2.0</text>
+
+    <!-- Stats -->
+    <text x="450" y="600" font-size="13" fill="#64748b">13 keywords</text>
+    <text x="550" y="600" font-size="13" fill="#64748b">·</text>
+    <text x="565" y="600" font-size="13" fill="#64748b">12 types</text>
+    <text x="640" y="600" font-size="13" fill="#64748b">·</text>
+    <text x="655" y="600" font-size="13" fill="#64748b">14 UI components</text>
+    <text x="800" y="600" font-size="13" fill="#64748b">·</text>
+    <text x="815" y="600" font-size="13" fill="#64748b">~12.5k LOC TypeScript</text>
+
+    <text x="1020" y="600" font-size="13" fill="#fbbf24">&#9733; Star on GitHub</text>
+    <text x="1020" y="622" font-size="11" fill="#64748b">MIT · Open Source</text>
+  </g>
 </svg>
