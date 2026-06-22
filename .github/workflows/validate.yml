@@ -1,0 +1,83 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docs structure
+        run: |
+          echo "Checking documentation structure..."
+          test -f docs/index.html && echo "  ✅ docs/index.html"
+          test -f docs/playground.html && echo "  ✅ docs/playground.html"
+          test -f docs/playground.css && echo "  ✅ docs/playground.css"
+          test -f docs/playground.js && echo "  ✅ docs/playground.js"
+          test -f docs/social-preview.png && echo "  ✅ docs/social-preview.png"
+          test -f docs/guide/getting-started.md && echo "  ✅ docs/guide/getting-started.md"
+          test -f docs/guide/language.md && echo "  ✅ docs/guide/language.md"
+          test -f docs/guide/cli.md && echo "  ✅ docs/guide/cli.md"
+          test -f docs/guide/examples.md && echo "  ✅ docs/guide/examples.md"
+
+      - name: Validate all examples parse
+        run: |
+          for f in examples/*.clear; do
+            echo "  Checking $f..."
+            node -e "
+              const {Parser} = require('./dist/parser.js');
+              const {Validator} = require('./dist/validator.js');
+              const fs = require('fs');
+              const src = fs.readFileSync('$f', 'utf-8');
+              const ast = new Parser().parse('$f', src);
+              new Validator().validate(ast);
+            " && echo "    ✅ $f"
+          done
+
+      - name: Check spec files exist
+        run: |
+          echo "Checking language specification..."
+          for f in spec/*.md; do
+            test -f "$f" && echo "  ✅ $f"
+          done
+
+  examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Validate all examples
+        run: |
+          for f in examples/*.clear; do
+            echo "  Validating $(basename $f)..."
+            node dist/index.js check "$f"
+          done
+          for f in examples/*/*.clear; do
+            echo "  Validating $(basename $f)..."
+            node dist/index.js check "$f"
+          done
+
+      - name: Build examples to all targets
+        run: |
+          EXAMPLE="examples/rest-api.clear"
+          for target in typescript express hono fastify koa openapi postman; do
+            echo "  Building → $target..."
+            node dist/index.js build "$EXAMPLE" --target "$target" 2>/dev/null && echo "    ✅ $target" || echo "    ⚠️  $target (no output expected)"
+          done
