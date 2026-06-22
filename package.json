@@ -1,11 +1,12 @@
 {
-  "name": "@varshinicb1/clear",
-  "version": "0.4.1",
+  "name": "varshinicb-clear",
+  "version": "0.4.3",
   "description": "Clear — Structured English for REST APIs. Write the spec, run the server.",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
-    "clear": "./dist/index.js"
+    "clear-cli": "./dist/index.js",
+    "clear-mcp": "./dist/mcp-server.js"
   },
   "files": [
     "dist"
@@ -15,10 +16,11 @@
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "check": "tsx src/index.ts check",
-    "test": "node --test dist/parser.test.js dist/validator.test.js dist/codegen/*.test.js && node --test dist/interpreter/interpreter.test.js || true",
+    "test": "node --test dist/parser.test.js dist/validator.test.js dist/codegen/*.test.js",
     "test:ci": "node --test dist/parser.test.js dist/validator.test.js dist/codegen/*.test.js",
     "test:coverage": "c8 --reporter=lcov --reporter=text node --test dist/parser.test.js dist/validator.test.js dist/codegen/*.test.js",
     "test:update-snapshots": "UPDATE_SNAPSHOTS=1 node --test dist/parser.test.js dist/validator.test.js dist/codegen/*.test.js",
+    "mcp": "node dist/mcp-server.js",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -51,7 +53,8 @@
     "node": ">=18.0.0"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -60,6 +63,7 @@
     "typescript": "^7.0.1-rc"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "commander": "^12.1.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",

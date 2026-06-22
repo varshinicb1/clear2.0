@@ -8,7 +8,7 @@ import { generateCode, CodegenOptions } from './codegen/index.js'
 import { runInterpreter } from './interpreter/index.js'
 import { ClearFile, ParseError } from './ast.js'
 
-const VERSION = '0.3.0'
+const VERSION = '0.4.2'
 
 function formatError(error: ParseError, source: string, filename: string): string {
   const lines = source.split(/\r?\n/)
@@ -54,12 +54,15 @@ async function main() {
     case 'init':
       await cmdInit(args.slice(1))
       break
+    case 'mcp':
+      await cmdMcp()
+      break
     default:
       if (command.endsWith('.clear')) {
         await cmdRun(args)
       } else {
         console.error(`Unknown command: ${command}`)
-        console.error('Run `clear --help` for usage')
+        console.error('Run `clear-cli --help` for usage')
         process.exit(1)
       }
   }
@@ -473,6 +476,12 @@ async function cmdInit(args: string[]) {
   console.log(`  cd ${name}`)
   console.log(`  clear check main.clear`)
   console.log(`  clear run main.clear`)
+}
+
+async function cmdMcp() {
+  // Start the MCP server (stdio-based, for AI agents)
+  const { main } = await import('./mcp-server.js')
+  await main()
 }
 
 function processFile(filepath: string): { source: string; ast: ClearFile; errors: ParseError[] } | null {

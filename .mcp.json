@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "clear": {
+      "command": "npx",
+      "args": ["-y", "varshinicb-clear@latest", "clear-mcp"],
+      "description": "Clear language MCP server — validate, build, explain .clear files for AI agents"
+    }
+  }
+}
